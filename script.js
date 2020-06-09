@@ -228,9 +228,9 @@ function play(value) {
 	if(leftArray.length == 0)
 		return;
 	for(var i = 0;i < 25;i++) {
-			if(leftArray[i] == parseInt(value, 10)) {
-				usedArray.push(parseInt(value, 10));
-				leftArray.splice(i, 1);
+		if(leftArray[i] == parseInt(value, 10)) {
+			usedArray.push(parseInt(value, 10));
+			leftArray.splice(i, 1);
 		}
 	}
 	for(var i = 0;i < 5;i++) {
@@ -286,18 +286,18 @@ function checkBingo(r, c, arr, cnt, ch) {
 		if(ch == "u") {
 			userWon = true;
 			if(botWon == true) {
-				document.getElementById("end-result").innerHTML = "It Was A Draw !!!";
+				document.getElementById("end-result").innerHTML = "It was a draw !";
 				return;
 			}
-			document.getElementById("end-result").innerHTML = "You Won !!!";
+			document.getElementById("end-result").innerHTML = "You won !!!";
 		}
 		else {
 			botWon = true;
 			if(userWon == true) {
-				document.getElementById("end-result").innerHTML = "It Was A Draw !!!";
+				document.getElementById("end-result").innerHTML = "It was a draw !";
 				return;
 			}
-			document.getElementById("end-result").innerHTML = "Bot Won :(";
+			document.getElementById("end-result").innerHTML = "Bot won :(";
 		}
 		return;
 	}
