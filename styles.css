@@ -10,14 +10,27 @@
 }
 .table1{
 	border-collapse: collapse;
-	margin-left: 300px;
+	margin-left: 30%;
 	float: left;
 }
-.table2, .outputcell{
-	border: 4px solid black;	
+.table2 {
 	border-collapse: collapse;	
-	font-size: 50px; 
-	margin-left: 950px; 
+	margin-left: 60%;
+}
+#gaming-table {
+	border-collapse: collapse;
+	/*margin-left: 40%;*/
+	display: inline-block;
+}
+.outputcell {
+	border: 3px solid black;	
+	text-align: center;
+	display: inline-block;
+	transition-duration: 0.4s;
+	font-size: 2vw;
+	margin:	0.1vh 0.1vw;
+	padding: 0.2vh 0.2vw;
+	cursor: not-allowed;
 }
 .center{
 	display: flex;
@@ -29,9 +42,9 @@
 	text-align: center;
 	display: inline-block;
 	transition-duration: 0.4s;
-	font-size: 16px;
-	margin:	4px 2px;
-	padding: 15px 32px;
+	font-size: 2vw;
+	margin:	0.1vh 0.1vw;
+	padding: 0.2vh 0.2vw;
 	cursor: pointer;
 }
 .button1{
@@ -51,4 +64,16 @@
 .disabled_button:hover {
 	color: black;
 	background-color: grey;
+}
+#page1 {
+	text-align: center;
+	width: 100%;
+}
+#page2 {
+	text-align: center;
+	display: none;
+	width: 100%;
+}
+.bingo_letters {
+	font-size: 2vw;
 }

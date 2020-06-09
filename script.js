@@ -68,7 +68,7 @@ function createRandomInput() {
 	createRandomTable(output, "outputcell");
 	for(var i = 0;i < 5;i++)
 		for(var j = 0;j < 5;j++)
-			Disable(input.children[i].children[j].children[0]);
+			Disable(input.children[i].children[j]);
 	row = 5;
 	col = 5;	
 }
@@ -89,8 +89,8 @@ function outputInitializer(table) {
 		}
 		table.appendChild(tr);
 	}	
-	table.rows[0].cells[0].innerHTML = "*";
-	table.rows[0].cells[0].setAttribute("style", "text-align: center; color: black");	
+	table.rows[0].cells[0].innerHTML = "(*)";
+	table.rows[0].cells[0].setAttribute("style", "color: black");	
 }
 
 //Input Table Function
@@ -100,21 +100,20 @@ function inputTable(table, outputTable, cellId) {
 		var tr = document.createElement("tr");
 		for(var j = 0;j < 5;j++) {	
 			var td = document.createElement("td");
-			var button = document.createElement("button");
-			button.id = cellId;	
+			td.id = cellId;
 			if(cnt % 10 == cnt) {
-				button.innerHTML = "0";
-				button.id  += "0";
+				td.innerHTML = "0";
+				td.id += "0";
 			}
-			button.innerHTML += cnt;
-			button.className = "button button1";
-			button.onclick = function() {
+			td.innerHTML += cnt;
+			td.className = "button button1";
+			td.id += cnt;
+			td.onclick = function() {
 				Disable(this);
 				AddArr(this, outputTable);
 			}
-			cnt++;
-			td.appendChild(button);
 			tr.appendChild(td);
+			cnt++;
 		}
 		table.appendChild(tr);
 	}
@@ -126,11 +125,10 @@ function outputBasedInputTable(table, knownTable) {
 		var tr = document.createElement("tr");
 		for(var j = 0;j < 5;j++) {	
 			var td = document.createElement("td");
-			var button = document.createElement("button");
-			button.innerHTML = knownTable.rows[i].cells[j].innerHTML;
-			button.className = "button button1";
-			button.id = [i, j];
-			button.onclick = function() {
+			td.innerHTML = knownTable.rows[i].cells[j].innerHTML;
+			td.className = "button button1";
+			td.id = [i, j];
+			td.onclick = function() {
 				if(playerTurn) {
 					playerTurn = false;
 					Disable(this);
@@ -138,7 +136,6 @@ function outputBasedInputTable(table, knownTable) {
 					checkBingo(this.id[0], this.id[2], arrUser, cntUser, "u");
 				}
 			}
-			td.appendChild(button);
 			tr.appendChild(td);
 		}
 		table.appendChild(tr);
@@ -179,7 +176,7 @@ function createRandomTable(table, clName) {
 function createRandom(a) {
 	var tmp,cur,tp = a.length;
 	while(--tp) {
-		cur = Math.floor(Math.random()*(tp + 2));
+		cur = Math.floor(Math.random()*(tp + 1));
 		tmp = a[cur];
 		a[cur] = a[tp];
 		a[tp] = tmp;
@@ -188,7 +185,7 @@ function createRandom(a) {
 
 //Function To Disable A Button
 function Disable(button) {
-	button.disabled = true;
+	button.onclick = null;
 	button.className += " disabled_button";
 }
 
@@ -204,7 +201,7 @@ function AddArr(button, outputTable) {
 		col++;
 	if(row == 5 || col == 5)
 		return;
-	outputTable.rows[row].cells[col].innerHTML = " *";
+	outputTable.rows[row].cells[col].innerHTML = "(*)";
 	outputTable.rows[row].cells[col].setAttribute("style", "text-align: center; color: black");
 }
 
@@ -245,12 +242,13 @@ function play(value) {
 		}
 	}
 	setTimeout(function (){
-		play2(value);
-		playerTurn = true;}, 700);
+		playBot(value);
+		playerTurn = true;
+	}, 700);
 }
 
 //Function To Track Bot's Move
-function play2(value) {
+function playBot(value) {
 	var randIndex = Math.floor(Math.random()*(leftArray.length));
 	var ele = leftArray[randIndex];
 	usedArray.push(leftArray[randIndex]);
@@ -261,8 +259,8 @@ function play2(value) {
 	target = target + ele;
 	for(var i = 0;i < 5;i++) {
 		for(var j = 0;j < 5;j++) {
-			if(gamingTable.children[i].children[j].children[0].innerHTML == target) {
-				Disable(gamingTable.children[i].children[j].children[0]);
+			if(gamingTable.children[i].children[j].innerHTML == target) {
+				Disable(gamingTable.children[i].children[j]);
 				checkBingo(i, j, arrUser, cntUser, "u");
 			}
 			if(botTable.rows[i].cells[j].innerHTML == target) {
@@ -278,10 +276,11 @@ function play2(value) {
 // Function To Check BINGO Status
 function checkBingo(r, c, arr, cnt, ch) {
 	if(cnt[0] == 5) {
+		document.getElementById("replay").disabled = false;
 		for(var i = 0;i < 5;i++) {
 			for(var j = 0;j < 5;j++) {
 				botTable.rows[i].cells[j].setAttribute("style", "color: white;");
-				Disable(gamingTable.children[i].children[j].children[0]);
+				Disable(gamingTable.children[i].children[j]);
 			}
 		}
 		if(ch == "u") {
@@ -320,11 +319,15 @@ function checkBingo(r, c, arr, cnt, ch) {
 	}
 	if(frow == 1) {
 		cnt[0]++;
-		document.getElementById(ch+cnt[0]).setAttribute("style","text-decoration: line-through");
+		if(document.getElementById(ch+cnt[0])) {
+			document.getElementById(ch+cnt[0]).setAttribute("style","text-decoration: line-through");
+		}
 	}
 	if(fcol == 1 && cnt[0] < 5) {
 		cnt[0]++;
-		document.getElementById(ch+cnt[0]).setAttribute("style","text-decoration: line-through");
+		if(document.getElementById(ch+cnt[0])) {
+			document.getElementById(ch+cnt[0]).setAttribute("style","text-decoration: line-through");
+		}
 	}
 	if(r == c) {
 		var fdiagLeft = 1;
@@ -336,7 +339,9 @@ function checkBingo(r, c, arr, cnt, ch) {
 		}
 		if(fdiagLeft == 1 && cnt[0] < 5) {
 			cnt[0]++;
-			document.getElementById(ch+cnt[0]).setAttribute("style","text-decoration: line-through");
+			if(document.getElementById(ch+cnt[0])) {
+				document.getElementById(ch+cnt[0]).setAttribute("style","text-decoration: line-through");
+			}
 		}
 	}
 	if((r + c) == 4) {
@@ -349,8 +354,14 @@ function checkBingo(r, c, arr, cnt, ch) {
 		}
 		if(fdiagRight == 1 && cnt[0] < 5){
 			cnt[0]++;
-			document.getElementById(ch+cnt[0]).setAttribute("style","text-decoration: line-through");
+			if(document.getElementById(ch+cnt[0])) {
+				document.getElementById(ch+cnt[0]).setAttribute("style","text-decoration: line-through");
+			}
 		}
 	}
+}
+
+function replay() {
+	window.location.reload();
 }
 //	*****End Of Functions*****

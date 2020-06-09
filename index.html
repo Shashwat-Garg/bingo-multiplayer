@@ -2,49 +2,43 @@
 <html>
 <head>
 	<title>Let's Play Bingo!!!</title>
-	<link rel="stylesheet" href="styles.css">
+	<link rel="stylesheet" href="styles.css" />
 	<script async src ="script.js" ></script>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body id="body">
 	<div id="page1">
-		<h1 id="h1">Please Enter Your Bingo Matrix !</h1>
+		<h1>Please Fill Your Bingo Matrix !</h1>
 		<br><br>
-		<div style="width: 80%; margin-left: 40px">
+		<div style="width: 80%; margin-left: 2%;">
 			<table id = "input-table" class="table1"></table>
 			<table id = "output-table" class="table2"></table>
-		</div><br>	
-		<div style="margin-left: 1080px;">
-			<button id="nextpage" onclick="resetTable();">Reset Matrix</button>
 		</div>
-		<div style="margin-left: 800px;">
-			<button id="nextpage" onclick="confCheck('page1','page2');">Confirm</button>
-		</div><br>
-		<div style="margin-left: 730px">
-			<button id="random-input-matrix" onclick="createRandomInput();">Create Random Matrix</button>
-		</div>
+		<br><br>
+		<button id="nextpage" onclick="resetTable();" style="margin-left: 17.5%;">Reset Matrix</button>
+		<br>
+		<br>
+		<button id="random-input-matrix" onclick="createRandomInput();">Create Random Matrix</button>
+		<br>
+		<br>
+		<button id="nextpage" onclick="confCheck('page1','page2');">Confirm</button>
 	</div>
-	<div id='page2' style="display: none;">
+	<div id='page2'>
 		<h1>Let's Play !</h1>
-		<div id = "user-bingo-string">
-			<span id = "u1">B</span>
-			<span id = "u2">I</span>
-			<span id = "u3">N</span>
-			<span id = "u4">G</span>
-			<span id = "u5">O</span>
-		</div>
-		<div id = "bot-bingo-string">
-			<span id = "b1">B</span>
-			<span id = "b2">I</span>
-			<span id = "b3">N</span>
-			<span id = "b4">G</span>
-			<span id = "b5">O</span>
+		<br><br>
+		<div>
+			<span id = "u1" class="bingo_letters">B</span>
+			<span id = "u2" class="bingo_letters">I</span>
+			<span id = "u3" class="bingo_letters">N</span>
+			<span id = "u4" class="bingo_letters">G</span>
+			<span id = "u5" class="bingo_letters">O</span>
 		</div>
 		<br><br><br>
-		<div style="width: 80%; margin-left: 40px">
-			<table id = "gaming-table" class="table1"></table>
-			<table id = "bot-table" class="table2"></table>
-		</div><br><br>
+		<table id = "gaming-table"></table>
+		<table id = "bot-table" class="table2" style="display: none;"></table>
+		<br><br>
 		<h1 id = "end-result"></h1>
+		<button id="replay" onclick="replay();" disabled="true">Replay</button>
 	</div>
 	<p id="game-status"></p>
 </body>
