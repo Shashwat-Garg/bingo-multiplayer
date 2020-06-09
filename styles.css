@@ -28,8 +28,8 @@
 	display: inline-block;
 	transition-duration: 0.4s;
 	font-size: 2vw;
-	margin:	0.1vh 0.1vw;
-	padding: 0.2vh 0.2vw;
+	margin:	0.1vw 0.1vw;
+	padding: 0.2vw 0.2vw;
 	cursor: not-allowed;
 }
 .center{
@@ -43,8 +43,8 @@
 	display: inline-block;
 	transition-duration: 0.4s;
 	font-size: 2vw;
-	margin:	0.1vh 0.1vw;
-	padding: 0.2vh 0.2vw;
+	margin:	0.1vw 0.1vw;
+	padding: 0.2vw 0.2vw;
 	cursor: pointer;
 }
 .button1{
