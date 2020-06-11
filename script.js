@@ -4,13 +4,12 @@ var row = 0,col = 0;
 for(var i = 0;i < 5;i++) {
 	arrUser[i] = new Array(5);
 	arrBot[i] = new Array(5);
-}
-for(var i = 0;i < 5;i++) {
 	for(var j = 0;j < 5;j++) {
 		arrUser[i][j] = 0;
 		arrBot[i][j] = 0;
 	}
 }
+
 
 //Player's Turn Variable
 var playerTurn;
@@ -34,9 +33,9 @@ var gamingTable = document.getElementById("gaming-table");
 var botTable = document.getElementById("bot-table");
 
 // Gaming Object Dictionary
-var game = {"user-matrix": gamingTable, 
-			"bot-matrix": botTable, 
-			"left-numbers": leftArray, 
+var game = {"user-matrix": gamingTable,
+			"bot-matrix": botTable,
+			"left-numbers": leftArray,
 			"used-numbers": usedArray};
 //Creating BINGO strings for user and bot
 var cntUser;
@@ -70,7 +69,7 @@ function createRandomInput() {
 		for(var j = 0;j < 5;j++)
 			Disable(input.children[i].children[j]);
 	row = 5;
-	col = 5;	
+	col = 5;
 }
 
 //Initialising Output Table
@@ -271,36 +270,8 @@ function playBot(value) {
 	}
 }
 
-//Function To Print End Result
-
-// Function To Check BINGO Status
+//Function to check BINGO status and print end results
 function checkBingo(r, c, arr, cnt, ch) {
-	if(cnt[0] == 5) {
-		document.getElementById("replay").disabled = false;
-		for(var i = 0;i < 5;i++) {
-			for(var j = 0;j < 5;j++) {
-				botTable.rows[i].cells[j].setAttribute("style", "color: white;");
-				Disable(gamingTable.children[i].children[j]);
-			}
-		}
-		if(ch == "u") {
-			userWon = true;
-			if(botWon == true) {
-				document.getElementById("end-result").innerHTML = "It was a draw !";
-				return;
-			}
-			document.getElementById("end-result").innerHTML = "You won !!!";
-		}
-		else {
-			botWon = true;
-			if(userWon == true) {
-				document.getElementById("end-result").innerHTML = "It was a draw !";
-				return;
-			}
-			document.getElementById("end-result").innerHTML = "Bot won :(";
-		}
-		return;
-	}
 	r = parseInt(r, 10);
 	c = parseInt(c, 10);
 	arr[r][c] = 1;
@@ -358,6 +329,32 @@ function checkBingo(r, c, arr, cnt, ch) {
 				document.getElementById(ch+cnt[0]).setAttribute("style","text-decoration: line-through");
 			}
 		}
+	}
+	if(cnt[0] >= 5) {
+		document.getElementById("replay").disabled = false;
+		for(var i = 0;i < 5;i++) {
+			for(var j = 0;j < 5;j++) {
+				botTable.rows[i].cells[j].setAttribute("style", "color: white;");
+				Disable(gamingTable.children[i].children[j]);
+			}
+		}
+		if(ch == "u") {
+			userWon = true;
+			if(botWon == true) {
+				document.getElementById("end-result").innerHTML = "It was a draw !";
+				return;
+			}
+			document.getElementById("end-result").innerHTML = "You won !!!";
+		}
+		else {
+			botWon = true;
+			if(userWon == true) {
+				document.getElementById("end-result").innerHTML = "It was a draw !";
+				return;
+			}
+			document.getElementById("end-result").innerHTML = "Bot won :(";
+		}
+		return;
 	}
 }
 
