@@ -291,13 +291,15 @@ function checkBingo(r, c, arr, cnt, ch) {
 	if(frow == 1) {
 		cnt[0]++;
 		if(document.getElementById(ch+cnt[0])) {
-			document.getElementById(ch+cnt[0]).setAttribute("style","text-decoration: line-through");
+			var obj = document.getElementById(ch+cnt[0]);
+			document.getElementById(ch+cnt[0]).src  = obj.src.substring(0,52)+"-CUT.png";
 		}
 	}
 	if(fcol == 1 && cnt[0] < 5) {
 		cnt[0]++;
 		if(document.getElementById(ch+cnt[0])) {
-			document.getElementById(ch+cnt[0]).setAttribute("style","text-decoration: line-through");
+			var obj = document.getElementById(ch+cnt[0]);
+			document.getElementById(ch+cnt[0]).src  = obj.src.substring(0,52)+"-CUT.png";
 		}
 	}
 	if(r == c) {
@@ -311,7 +313,8 @@ function checkBingo(r, c, arr, cnt, ch) {
 		if(fdiagLeft == 1 && cnt[0] < 5) {
 			cnt[0]++;
 			if(document.getElementById(ch+cnt[0])) {
-				document.getElementById(ch+cnt[0]).setAttribute("style","text-decoration: line-through");
+				var obj = document.getElementById(ch+cnt[0]);
+				document.getElementById(ch+cnt[0]).src  = obj.src.substring(0,52)+"-CUT.png";
 			}
 		}
 	}
@@ -326,11 +329,12 @@ function checkBingo(r, c, arr, cnt, ch) {
 		if(fdiagRight == 1 && cnt[0] < 5){
 			cnt[0]++;
 			if(document.getElementById(ch+cnt[0])) {
-				document.getElementById(ch+cnt[0]).setAttribute("style","text-decoration: line-through");
+				var obj = document.getElementById(ch+cnt[0]);
+				document.getElementById(ch+cnt[0]).src  = obj.src.substring(0,52)+"-CUT.png";
 			}
 		}
 	}
-	if(cnt[0] >= 5) {
+	if(cnt[0] == 5) {
 		document.getElementById("replay").disabled = false;
 		for(var i = 0;i < 5;i++) {
 			for(var j = 0;j < 5;j++) {
@@ -340,21 +344,19 @@ function checkBingo(r, c, arr, cnt, ch) {
 		}
 		if(ch == "u") {
 			userWon = true;
-			if(botWon == true) {
-				document.getElementById("end-result").innerHTML = "It was a draw !";
-				return;
-			}
-			document.getElementById("end-result").innerHTML = "You won !!!";
+			return;
 		}
 		else {
 			botWon = true;
 			if(userWon == true) {
-				document.getElementById("end-result").innerHTML = "It was a draw !";
+				document.getElementById("end-result").innerHTML = "It Was A Draw !!!";
 				return;
 			}
-			document.getElementById("end-result").innerHTML = "Bot won :(";
+			document.getElementById("end-result").innerHTML = "Bot Won :(";
 		}
-		return;
+	}
+	if(userWon == true) {
+		document.getElementById("end-result").innerHTML = "You Won !!!";
 	}
 }
 
