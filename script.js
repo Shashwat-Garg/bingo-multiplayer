@@ -275,32 +275,6 @@ function playBot(value) {
 
 // Function To Check BINGO Status
 function checkBingo(r, c, arr, cnt, ch) {
-	if(cnt[0] == 5) {
-		document.getElementById("replay").disabled = false;
-		for(var i = 0;i < 5;i++) {
-			for(var j = 0;j < 5;j++) {
-				botTable.rows[i].cells[j].setAttribute("style", "color: white;");
-				Disable(gamingTable.children[i].children[j]);
-			}
-		}
-		if(ch == "u") {
-			userWon = true;
-			if(botWon == true) {
-				document.getElementById("end-result").innerHTML = "It Was A Draw !!!";
-				return;
-			}
-			document.getElementById("end-result").innerHTML = "You Won !!!";
-		}
-		else {
-			botWon = true;
-			if(userWon == true) {
-				document.getElementById("end-result").innerHTML = "It Was A Draw !!!";
-				return;
-			}
-			document.getElementById("end-result").innerHTML = "Bot Won :(";
-		}
-		return;
-	}
 	r = parseInt(r, 10);
 	c = parseInt(c, 10);
 	arr[r][c] = 1;
@@ -320,13 +294,15 @@ function checkBingo(r, c, arr, cnt, ch) {
 	if(frow == 1) {
 		cnt[0]++;
 		if(document.getElementById(ch+cnt[0])) {
-			document.getElementById(ch+cnt[0]).setAttribute("style","text-decoration: line-through");
+			var obj = document.getElementById(ch+cnt[0]);
+			document.getElementById(ch+cnt[0]).src  = obj.src.substring(0,52)+"-CUT.png";
 		}
 	}
 	if(fcol == 1 && cnt[0] < 5) {
 		cnt[0]++;
 		if(document.getElementById(ch+cnt[0])) {
-			document.getElementById(ch+cnt[0]).setAttribute("style","text-decoration: line-through");
+			var obj = document.getElementById(ch+cnt[0]);
+			document.getElementById(ch+cnt[0]).src  = obj.src.substring(0,52)+"-CUT.png";
 		}
 	}
 	if(r == c) {
@@ -340,7 +316,8 @@ function checkBingo(r, c, arr, cnt, ch) {
 		if(fdiagLeft == 1 && cnt[0] < 5) {
 			cnt[0]++;
 			if(document.getElementById(ch+cnt[0])) {
-				document.getElementById(ch+cnt[0]).setAttribute("style","text-decoration: line-through");
+				var obj = document.getElementById(ch+cnt[0]);
+				document.getElementById(ch+cnt[0]).src  = obj.src.substring(0,52)+"-CUT.png";
 			}
 		}
 	}
@@ -355,9 +332,34 @@ function checkBingo(r, c, arr, cnt, ch) {
 		if(fdiagRight == 1 && cnt[0] < 5){
 			cnt[0]++;
 			if(document.getElementById(ch+cnt[0])) {
-				document.getElementById(ch+cnt[0]).setAttribute("style","text-decoration: line-through");
+				var obj = document.getElementById(ch+cnt[0]);
+				document.getElementById(ch+cnt[0]).src  = obj.src.substring(0,52)+"-CUT.png";
 			}
 		}
+	}
+	if(cnt[0] == 5) {
+		document.getElementById("replay").disabled = false;
+		for(var i = 0;i < 5;i++) {
+			for(var j = 0;j < 5;j++) {
+				botTable.rows[i].cells[j].setAttribute("style", "color: white;");
+				Disable(gamingTable.children[i].children[j]);
+			}
+		}
+		if(ch == "u") {
+			userWon = true;
+			return;
+		}
+		else {
+			botWon = true;
+			if(userWon == true) {
+				document.getElementById("end-result").innerHTML = "It Was A Draw !!!";
+				return;
+			}
+			document.getElementById("end-result").innerHTML = "Bot Won :(";
+		}
+	}
+	if(userWon == true) {
+		document.getElementById("end-result").innerHTML = "You Won !!!";
 	}
 }
 
