@@ -292,14 +292,14 @@ function checkBingo(r, c, arr, cnt, ch) {
 		cnt[0]++;
 		if(document.getElementById(ch+cnt[0])) {
 			var obj = document.getElementById(ch+cnt[0]);
-			document.getElementById(ch+cnt[0]).src  = obj.src.substring(0,52)+"-CUT.png";
+			document.getElementById(ch+cnt[0]).src  = obj.src.substring(0, obj.src.length-4)+"-CUT.png";
 		}
 	}
 	if(fcol == 1 && cnt[0] < 5) {
 		cnt[0]++;
 		if(document.getElementById(ch+cnt[0])) {
 			var obj = document.getElementById(ch+cnt[0]);
-			document.getElementById(ch+cnt[0]).src  = obj.src.substring(0,52)+"-CUT.png";
+			document.getElementById(ch+cnt[0]).src  = obj.src.substring(0, obj.src.length-4)+"-CUT.png";
 		}
 	}
 	if(r == c) {
@@ -314,7 +314,7 @@ function checkBingo(r, c, arr, cnt, ch) {
 			cnt[0]++;
 			if(document.getElementById(ch+cnt[0])) {
 				var obj = document.getElementById(ch+cnt[0]);
-				document.getElementById(ch+cnt[0]).src  = obj.src.substring(0,52)+"-CUT.png";
+				document.getElementById(ch+cnt[0]).src  = obj.src.substring(0, obj.src.length-4)+"-CUT.png";
 			}
 		}
 	}
@@ -330,7 +330,7 @@ function checkBingo(r, c, arr, cnt, ch) {
 			cnt[0]++;
 			if(document.getElementById(ch+cnt[0])) {
 				var obj = document.getElementById(ch+cnt[0]);
-				document.getElementById(ch+cnt[0]).src  = obj.src.substring(0,52)+"-CUT.png";
+				document.getElementById(ch+cnt[0]).src  = obj.src.substring(0, obj.src.length-4)+"-CUT.png";
 			}
 		}
 	}
