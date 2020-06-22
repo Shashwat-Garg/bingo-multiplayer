@@ -7,14 +7,16 @@
     <script async src ="script.js" ></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
-<body id="body">
-    <br><br>
+<body id="body" onload="checkCookie();" class="text">
+	<strong id="player-name"></strong>
     <div id = "page0">
         <h1 class="titles">Welcome to Bingo !</h1>
         <input type="text" id="user-name" placeholder="Enter user name here...">
         <br><br>
+        <input type="checkbox" value="lsRememberMe" id="rememberMe"><label for="rememberMe">Remember me</label>
+        <br><br>
         <button id="submit-username" onclick="confUser();">Submit</button>
-        <div class="text">
+        <div>
             <p>Username <strong>must</strong> be as per below rules:</p>
             <ul id="rules-list">
                 <li>It should be at least 5 characters long.</li>
@@ -44,7 +46,7 @@
     <div id='page2'>
         <h1 class="titles">Game Lobby</h1>
         <br><br>
-        <div class="text">
+        <div>
             <p>Current players:</p>
             <ol id="players-list">
             </ol>
@@ -53,7 +55,7 @@
         <button id="share-room" onclick="copyText();">Share my room</button>
         <button id="start-game" onclick="playGame();" disabled>Start Game</button>
         <br>
-        <p class="text" id="copied-text"></p>
+        <p id="copied-text"></p>
     </div>
     <div id='page3'>
         <h1 class="titles">Let's Play !</h1>

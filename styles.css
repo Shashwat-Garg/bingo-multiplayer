@@ -1,3 +1,23 @@
+.loader {
+  border: 16px solid #f3f3f3;
+  border-radius: 50%;
+  border-top: 16px solid #3498db;
+  width: 120px;
+  height: 120px;
+  -webkit-animation: spin 2s linear infinite; /* Safari */
+  animation: spin 2s linear infinite;
+}
+
+/* Safari */
+@-webkit-keyframes spin {
+  0% { -webkit-transform: rotate(0deg); }
+  100% { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
 #user-name {
     font-size: 3.2vw;
     width: 40vw;
@@ -97,9 +117,15 @@
     font-size: 3vw;
     text-align: center;
 }*/
-#rules-list, #players-list {
+#rules-list, #players-list, #rememberMe{
     display: inline-block;
     text-align: left;
+}
+
+#player-name {
+    display: none;
+	border: 3px solid #73AD21;
+	padding: 0.5vw;
 }
 
 @media only screen and (min-width: 900px) {
@@ -143,4 +169,7 @@
     .text {
         font-size: 1.6vw;
     }
+	#player-name {
+		float: right;
+	}
 }

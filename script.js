@@ -9,7 +9,6 @@ const tags = {
 // Row and column dynamic variables
 var row = 0, col = 0;
 
-
 // Player's turn variable
 var playerTurn = false;
 
@@ -29,16 +28,6 @@ trigEnter.addEventListener("keyup", function(event) {
 // ********** Creating Socket *****
 var socket = io.connect("wss://bingo-multiplayer.herokuapp.com");
 // var socket = io.connect("http://localhost:5000");
-
-// Add a connect listener
-socket.on('connect', function() {
-	console.log('Client has connected to the server!');
-});
-
-// Add a disconnect listener
-socket.on('disconnect', function() {
-	console.log('The client has disconnected!');
-});
 
 // ***** End of creating Socket *****
 
@@ -233,6 +222,37 @@ function copyText() {
     }, 3000);
 }
 
+function setCookie(cname, cvalue, exdays) {
+  var d = new Date();
+  d.setTime(d.getTime() + (exdays*24*60*60*1000));
+  var expires = "expires=" + d.toGMTString();
+  document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+}
+
+function getCookie(cname) {
+  var name = cname + "=";
+  var decodedCookie = decodeURIComponent(document.cookie);
+  var ca = decodedCookie.split(';');
+  for(var i = 0; i < ca.length; i++) {
+    var c = ca[i];
+    while (c.charAt(0) == ' ') {
+      c = c.substring(1);
+    }
+    if (c.indexOf(name) == 0) {
+      return c.substring(name.length, c.length);
+    }
+  }
+  return "NA";
+}
+
+function checkCookie() {
+  var user = getCookie("username");
+  console.log(user);
+  if (user != "NA") {
+  	document.getElementById("user-name").value = user;
+  	document.getElementById("submit-username").click();
+  }
+}
 // Function to check if username is correctly entered
 function confUser() {
     userName = document.getElementById("user-name").value;
@@ -251,12 +271,18 @@ function confUser() {
         if(retObj.success) {
             document.getElementById("page0").style.display = "none";
             document.getElementById("page1").style.display = "inline-block";
+            if(document.getElementById("rememberMe").checked) {
+			   	setCookie("username", userName, 7);
+            }
+            document.getElementById("player-name").style.display = "inline-block";
+            document.getElementById("player-name").innerHTML = userName;
         }
         else {
             alert(retObj.error);
         }
     });
 }
+
 // Function to check if matrix is filled completely
 function confMatrix(callThisFunction) {
     if((row != 5) && (col != 5))
