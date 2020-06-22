@@ -1,3 +1,10 @@
+// Tags used with objects in the code
+const tags = {
+	COUNT_USER: 'countUser',
+	COUNT_BOT: 'countBot',
+	ELEMENT: 'element'
+};
+
 // Row and column dynamic variables
 var row = 0, col = 0;
 
@@ -152,19 +159,19 @@ function outputBasedInputTable(table, knownTable) {
 					socket.emit('userSelection', obj, function(data) {
 						if(data.success) {
 							playerTurn = true;
-							disableUserCell(data.element);
-							bingoTicks(data.countuser);
-							if((data.countuser == 5) || (data.countbot == 5)) {
+							disableUserCell(data[tags.ELEMENT]);
+							bingoTicks(data[tags.COUNT_USER]);
+							if((data[tags.COUNT_USER] == 5) || (data[tags.COUNT_BOT] == 5)) {
 								disableAll(table);
 								document.getElementById("replay").disabled = false;
 							}
-							if((data.countuser == 5 ) && (data.countbot == 5)) {
+							if((data[tags.COUNT_USER] == 5 ) && (data[tags.COUNT_BOT] == 5)) {
 								document.getElementById("end-result").innerHTML = "It Was A Draw !!!";
 							}
-							else if(data.countuser == 5) {
+							else if(data[tags.COUNT_USER] == 5) {
 								document.getElementById("end-result").innerHTML = "You Won !!!";
 							}
-							else if(data.countbot == 5) {
+							else if(data[tags.COUNT_BOT] == 5) {
 								document.getElementById("end-result").innerHTML = "Bot Won :(";
 							}
 						}
