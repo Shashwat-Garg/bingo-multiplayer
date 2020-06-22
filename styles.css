@@ -1,3 +1,7 @@
+#user-name{
+	font-size: 1.6vw;
+	width: 20vw;
+}
 .bingo-image{
 	height: 5vw;
 }
@@ -69,8 +73,13 @@
 	color: black;
 	background-color: grey;
 }
+#page0 {
+	text-align: center;
+	width: 100%;
+}
 #page1 {
 	text-align: center;
+	display: none;
 	width: 100%;
 }
 #page2 {
