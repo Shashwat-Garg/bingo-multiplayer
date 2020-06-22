@@ -170,6 +170,10 @@
         font-size: 1.6vw;
     }
 	#player-name {
+<<<<<<< HEAD
+=======
+		padding: 0.5vw;
+>>>>>>> server-side.js implemented as backend for script.js
 		float: right;
 	}
 }

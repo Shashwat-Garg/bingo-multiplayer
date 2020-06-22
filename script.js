@@ -249,8 +249,8 @@ function checkCookie() {
   var user = getCookie("username");
   console.log(user);
   if (user != "NA") {
-  	document.getElementById("user-name").value = user;
-  	document.getElementById("submit-username").click();
+    document.getElementById("user-name").value = user;
+    document.getElementById("submit-username").click();
   }
 }
 // Function to check if username is correctly entered
@@ -272,7 +272,7 @@ function confUser() {
             document.getElementById("page0").style.display = "none";
             document.getElementById("page1").style.display = "inline-block";
             if(document.getElementById("rememberMe").checked) {
-			   	setCookie("username", userName, 7);
+                setCookie("username", userName, 7);
             }
             document.getElementById("player-name").style.display = "inline-block";
             document.getElementById("player-name").innerHTML = userName;
@@ -474,10 +474,10 @@ function disableUserCell(target) {
 
 // Function to create random input table
 function createRandomInput() {
-	createRandomTable(output, "outputcell");
-	disableAll(input);
-	row = 5;
-	col = 5;
+    createRandomTable(output, "outputcell");
+    disableAll(input);
+    row = 5;
+    col = 5;
 }
 
 function replay() {
