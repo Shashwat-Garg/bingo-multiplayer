@@ -1,141 +1,141 @@
-#user-name{
-	font-size: 3.2vw;
-	width: 40vw;
+#user-name {
+    font-size: 3.2vw;
+    width: 40vw;
 }
-.table1{
-	border-collapse: collapse;
-	float: left;
-	text-align: center;
-	width: 50%;
+.table1 {
+    border-collapse: collapse;
+    float: left;
+    text-align: center;
+    width: 50%;
 }
 .table2 {
-	border-collapse: collapse;
-	float: right;
-	text-align: center;
-	width: 50%;
+    border-collapse: collapse;
+    float: right;
+    text-align: center;
+    width: 50%;
 }
 #gaming-table {
-	border-collapse: collapse;
-	display: inline-block;
+    border-collapse: collapse;
+    display: inline-block;
 }
 .outputcell {
-	border: 3px solid black;
-	text-align: center;
-	display: inline-block;
-	transition-duration: 0.4s;
-	font-size: 4vw;
-	margin:	0.2vw 0.2vw;
-	padding: 0.3vw 0.3vw;
-	cursor: not-allowed;
+    border: 3px solid black;
+    text-align: center;
+    display: inline-block;
+    transition-duration: 0.4s;
+    font-size: 4vw;
+    margin: 0.2vw 0.2vw;
+    padding: 0.3vw 0.3vw;
+    cursor: not-allowed;
 }
 .center{
-	display: flex;
-	justify-content: center;
-	align-items: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 .button{
-	color: white;
-	text-align: center;
-	display: inline-block;
-	transition-duration: 0.4s;
-	font-size: 4vw;
-	margin:	0.2vw 0.2vw;
-	padding: 0.3vw 0.3vw;
-	cursor: pointer;
+    color: white;
+    text-align: center;
+    display: inline-block;
+    transition-duration: 0.4s;
+    font-size: 4vw;
+    margin: 0.2vw 0.2vw;
+    padding: 0.3vw 0.3vw;
+    cursor: pointer;
 }
 .button1{
-	background-color: white;
-	border: solid #4CAF50;
-	color: black;
+    background-color: white;
+    border: solid #4CAF50;
+    color: black;
 }
 .button1:hover{
-	background-color: #4CAF50;
-	color: white;
+    background-color: #4CAF50;
+    color: white;
 }
 .disabled_button {
-	background-color: grey;
-	cursor: not-allowed;
-	border: solid black;
+    background-color: grey;
+    cursor: not-allowed;
+    border: solid black;
 }
 .disabled_button:hover {
-	color: black;
-	background-color: grey;
+    color: black;
+    background-color: grey;
 }
 #page0 {
-	text-align: center;
-	width: 100%;
+    text-align: center;
+    width: 100%;
 }
 #page1 {
-	text-align: center;
-	display: none;
-	width: 100%;
+    text-align: center;
+    display: none;
+    width: 100%;
 }
 #page2 {
-	text-align: center;
-	display: none;
-	width: 100%;
+    text-align: center;
+    display: none;
+    width: 100%;
 }
 .bingo_letters {
-	height: 8vw;
+    height: 8vw;
 }
 #end-result {
-	font-size: 5vw;
+    font-size: 5vw;
 }
 .titles {
-	font-size: 5vw;
+    font-size: 5vw;
 }
 #reset-button {
-	margin-left: 50%;
-	margin-top: 1%;
+    margin-left: 50%;
+    margin-top: 1%;
 }
 #matrix-input-div {
-	width: 100%;
+    width: 100%;
 }
 #username-rules {
-	font-size: 3vw;
-	text-align: center;
+    font-size: 3vw;
+    text-align: center;
 }
 #rules-list {
-	display: inline-block;
-	text-align: left;
+    display: inline-block;
+    text-align: left;
 }
 
 @media only screen and (min-width: 900px) {
-	#user-name{
-		font-size: 1.6vw;
-		width: 20vw;
-	}
-	.table1{
-		margin-left: 20%;
-		width: 30%;
-	}
-	.table2 {
-		margin-right: 20%;
-		width: 30%;
-	}
-	.outputcell {
-		font-size: 2vw;
-		margin:	0.1vw 0.1vw;
-		padding: 0.2vw 0.2vw;
-	}
-	.button{
-		font-size: 2vw;
-		margin:	0.1vw 0.1vw;
-		padding: 0.2vw 0.2vw;
-	}
-	.bingo_letters {
-		height: 5vw;
-	}
-	#end-result {
-		font-size:2.5vw;
-	}
-	.titles {
-		font-size: 3vw;
-	}
-	#reset-button {
-		margin-left: 30%;
-	}
-	#username-rules {
-		font-size: 1.6vw;
-	}
+    #user-name{
+        font-size: 1.6vw;
+        width: 20vw;
+    }
+    .table1{
+        margin-left: 20%;
+        width: 30%;
+    }
+    .table2 {
+        margin-right: 20%;
+        width: 30%;
+    }
+    .outputcell {
+        font-size: 2vw;
+        margin: 0.1vw 0.1vw;
+        padding: 0.2vw 0.2vw;
+    }
+    .button{
+        font-size: 2vw;
+        margin: 0.1vw 0.1vw;
+        padding: 0.2vw 0.2vw;
+    }
+    .bingo_letters {
+        height: 5vw;
+    }
+    #end-result {
+        font-size:2.5vw;
+    }
+    .titles {
+        font-size: 3vw;
+    }
+    #reset-button {
+        margin-left: 30%;
+    }
+    #username-rules {
+        font-size: 1.6vw;
+    }
 }
