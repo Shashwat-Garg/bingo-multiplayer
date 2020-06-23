@@ -1,43 +1,31 @@
 #user-name{
-	font-size: 1.6vw;
-	width: 20vw;
-}
-.bingo-image{
-	height: 5vw;
-}
-
-#user-bingo-string {
-	margin-left: 540px;
-	font-size: 25px;
-	float: left;
-}
-#bot-bingo-string {
-	margin-right: 620px;
-	font-size: 25px;
-	float: right;
+	font-size: 3.2vw;
+	width: 40vw;
 }
 .table1{
 	border-collapse: collapse;
-	margin-left: 30%;
 	float: left;
+	text-align: center;
+	width: 50%;
 }
 .table2 {
-	border-collapse: collapse;	
-	margin-left: 60%;
+	border-collapse: collapse;
+	float: right;
+	text-align: center;
+	width: 50%;
 }
 #gaming-table {
 	border-collapse: collapse;
-	/*margin-left: 40%;*/
 	display: inline-block;
 }
 .outputcell {
-	border: 3px solid black;	
+	border: 3px solid black;
 	text-align: center;
 	display: inline-block;
 	transition-duration: 0.4s;
-	font-size: 2vw;
-	margin:	0.1vw 0.1vw;
-	padding: 0.2vw 0.2vw;
+	font-size: 4vw;
+	margin:	0.2vw 0.2vw;
+	padding: 0.3vw 0.3vw;
 	cursor: not-allowed;
 }
 .center{
@@ -50,9 +38,9 @@
 	text-align: center;
 	display: inline-block;
 	transition-duration: 0.4s;
-	font-size: 2vw;
-	margin:	0.1vw 0.1vw;
-	padding: 0.2vw 0.2vw;
+	font-size: 4vw;
+	margin:	0.2vw 0.2vw;
+	padding: 0.3vw 0.3vw;
 	cursor: pointer;
 }
 .button1{
@@ -88,11 +76,66 @@
 	width: 100%;
 }
 .bingo_letters {
-	font-size: 2vw;
+	height: 8vw;
 }
 #end-result {
-	font-size:2.5vw;
+	font-size: 5vw;
 }
 .titles {
+	font-size: 5vw;
+}
+#reset-button {
+	margin-left: 50%;
+	margin-top: 1%;
+}
+#matrix-input-div {
+	width: 100%;
+}
+#username-rules {
 	font-size: 3vw;
+	text-align: center;
+}
+#rules-list {
+	display: inline-block;
+	text-align: left;
+}
+
+@media only screen and (min-width: 900px) {
+	#user-name{
+		font-size: 1.6vw;
+		width: 20vw;
+	}
+	.table1{
+		margin-left: 20%;
+		width: 30%;
+	}
+	.table2 {
+		margin-right: 20%;
+		width: 30%;
+	}
+	.outputcell {
+		font-size: 2vw;
+		margin:	0.1vw 0.1vw;
+		padding: 0.2vw 0.2vw;
+	}
+	.button{
+		font-size: 2vw;
+		margin:	0.1vw 0.1vw;
+		padding: 0.2vw 0.2vw;
+	}
+	.bingo_letters {
+		height: 5vw;
+	}
+	#end-result {
+		font-size:2.5vw;
+	}
+	.titles {
+		font-size: 3vw;
+	}
+	#reset-button {
+		margin-left: 30%;
+	}
+	#username-rules {
+		font-size: 1.6vw;
+	}
 }

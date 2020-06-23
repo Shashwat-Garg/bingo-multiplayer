@@ -10,45 +10,47 @@
 <body id="body">
 	<br><br>
 	<div id = "page0">
+		<h1 class="titles">Welcome to Bingo !</h1>
 		<input type="text" id="user-name" placeholder="Enter user name here...">
 		<br><br>
-		<button id="nextpage" onclick="confUser();">Submit</button>
-		<p style="font-size: 1.6vw;">Username <strong>must</strong> be as per below rules:</p>
-		<ul style="display: inline-block; text-align: left; font-size: 1.6vw;">
-			<li>It should be at least 5 characters long.</li>
-			<li>It should be at most 20 characters long.</li>
-			<li>It can contain english alphabets(Both cases acceptable).</li>
-			<li>It can contain numbers(0 - 9).</li>
-			<li>It can contain an underscore (_) character.</li>
-		</ul>
+		<button onclick="confUser();">Submit</button>
+		<div id="username-rules">
+			<p>Username <strong>must</strong> be as per below rules:</p>
+			<ul id="rules-list">
+				<li>It should be at least 5 characters long.</li>
+				<li>It should be at most 20 characters long.</li>
+				<li>It can contain english alphabets(Both cases acceptable).</li>
+				<li>It can contain numbers(0 - 9).</li>
+				<li>It can contain an underscore (_) character.</li>
+			</ul>
+		</div>
 	</div>
 	<div id="page1">
 		<h1 class="titles">Please Fill Your Bingo Matrix !</h1>
 		<br><br>
-		<div style="width: 80%; margin-left: 2%;">
+		<div id="matrix-input-div">
 			<table id = "input-table" class="table1"></table>
 			<table id = "output-table" class="table2"></table>
 		</div>
 		<br><br>
-		<button id="nextpage" onclick="resetTable();" style="margin-left: 17.5%;">Reset Matrix</button>
+		<button id="reset-button" onclick="resetTable();">Reset Matrix</button>
 		<br><br>
 		<button id="random-input-matrix" onclick="createRandomInput();">Create Random Matrix</button>
 		<br><br>
-		<button id="nextpage" onclick="confMatrix();">Confirm</button>
+		<button onclick="confMatrix();">Confirm</button>
 	</div>
 	<div id='page2'>
 		<h1 class="titles">Let's Play !</h1>
 		<br><br>
 		<div>
-			<img src="images/B.png" id = "u1" class="bingo_letters bingo-image"></img>
-			<img src="images/I.png" id = "u2" class="bingo_letters bingo-image"></img>
-			<img src="images/N.png" id = "u3" class="bingo_letters bingo-image"></img>
-			<img src="images/G.png" id = "u4" class="bingo_letters bingo-image"></img>
-			<img src="images/O.png" id = "u5" class="bingo_letters bingo-image"></img>
+			<img src="images/B.png" id = "u1" class="bingo_letters"></img>
+			<img src="images/I.png" id = "u2" class="bingo_letters"></img>
+			<img src="images/N.png" id = "u3" class="bingo_letters"></img>
+			<img src="images/G.png" id = "u4" class="bingo_letters"></img>
+			<img src="images/O.png" id = "u5" class="bingo_letters"></img>
  		</div>
 		<br><br><br>
 		<table id = "gaming-table"></table>
-		<table id = "bot-table" class="table2" style="display: none;"></table>
 		<br><br>
 		<h1 id = "end-result"></h1>
 		<button id="replay" onclick="replay();" disabled="true">Replay</button>

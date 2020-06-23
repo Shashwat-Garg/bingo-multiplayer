@@ -37,7 +37,7 @@ function confUser() {
 	};
 	socket.emit('userNameInput', JSobj, function(retObj) {
 		if(retObj.success) {
-			document.getElementById("page0").setAttribute("style","display: none;");
+			document.getElementById("page0").style.display= "none";
 			document.getElementById("page1").style.display = "inline-block";
 		}
 		else {
@@ -86,14 +86,14 @@ function outputInitializer(table) {
 			td.innerHTML = "00";
 			td.id = cnt;
 			td.className = "outputcell";
-			td.setAttribute("style", "color: white;");
+			td.style.color = "white";
 			tr.appendChild(td);
 			cnt++;
 		}
 		table.appendChild(tr);
 	}	
 	table.rows[0].cells[0].innerHTML = "(*)";
-	table.rows[0].cells[0].setAttribute("style", "color: black");	
+	table.rows[0].cells[0].style.color = "black";
 }
 
 // Input table function
@@ -218,7 +218,7 @@ function createRandomTable(table, clName) {
 					td.innerHTML = a[cnt];
 					td.id = cnt+1;
 					td.className = clName;
-					td.setAttribute("style", "color: black;");
+					td.style.color = "black";
 					cnt++;
 				}
 			}
@@ -238,7 +238,7 @@ function Disable(button) {
 // Function to add element to output able
 function AddArr(button, outputTable) {
 	outputTable.rows[row].cells[col].innerHTML = button.innerHTML;
-	outputTable.rows[row].cells[col].setAttribute("style","color: black");
+	outputTable.rows[row].cells[col].style.color = "black";
 	if(col == 4) {
 		col = 0;
 		row++;
@@ -248,13 +248,14 @@ function AddArr(button, outputTable) {
 	if(row == 5 || col == 5)
 		return;
 	outputTable.rows[row].cells[col].innerHTML = "(*)";
-	outputTable.rows[row].cells[col].setAttribute("style", "text-align: center; color: black");
+	outputTable.rows[row].cells[col].style["text-align"] = "center";
+	outputTable.rows[row].cells[col].style.color = "black";
 }
 
 // Function to proceed to next page
 function clearScreen() {
-	document.getElementById("page1").setAttribute("style","display: none;");
-	document.getElementById("page2").setAttribute("style","display: inline-block");
+	document.getElementById("page1").style.display = "none";
+	document.getElementById("page2").style.display = "inline-block";
 	row = 0;
 	col = 0;
 	playerTurn = true;
