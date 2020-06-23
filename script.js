@@ -9,7 +9,7 @@ const tags = {
 var row = 0, col = 0;
 
 // ********** Creating Socket *****
-var socket = io.connect("http://bingo-multiplayer.herokuapp.com");
+var socket = io.connect("wss://bingo-multiplayer.herokuapp.com");
 
 // Player's turn variable
 var playerTurn;
