@@ -3,10 +3,25 @@
 <head>
 	<title>Let's Play Bingo!!!</title>
 	<link rel="stylesheet" href="styles.css" />
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
 	<script async src ="script.js" ></script>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body id="body">
+	<br><br>
+	<div id = "page0">
+		<input type="text" id="user-name" placeholder="Enter user name here...">
+		<br><br>
+		<button id="nextpage" onclick="confUser();">Submit</button>
+		<p style="font-size: 1.6vw;">Username <strong>must</strong> be as per below rules:</p>
+		<ul style="display: inline-block; text-align: left; font-size: 1.6vw;">
+			<li>It should be at least 5 characters long.</li>
+			<li>It should be at most 20 characters long.</li>
+			<li>It can contain english alphabets(Both cases acceptable).</li>
+			<li>It can contain numbers(0 - 9).</li>
+			<li>It can contain an underscore (_) character.</li>
+		</ul>
+	</div>
 	<div id="page1">
 		<h1 class="titles">Please Fill Your Bingo Matrix !</h1>
 		<br><br>
@@ -16,12 +31,10 @@
 		</div>
 		<br><br>
 		<button id="nextpage" onclick="resetTable();" style="margin-left: 17.5%;">Reset Matrix</button>
-		<br>
-		<br>
+		<br><br>
 		<button id="random-input-matrix" onclick="createRandomInput();">Create Random Matrix</button>
-		<br>
-		<br>
-		<button id="nextpage" onclick="confCheck('page1','page2');">Confirm</button>
+		<br><br>
+		<button id="nextpage" onclick="confMatrix();">Confirm</button>
 	</div>
 	<div id='page2'>
 		<h1 class="titles">Let's Play !</h1>
