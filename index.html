@@ -1,30 +1,113 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <title>Let's Play Bingo!!!</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
+    <script async src ="script.js" ></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body id="body">
+    <br><br>
+    <div id = "page0">
+        <h1 class="titles">Welcome to Bingo !</h1>
+        <input type="text" id="user-name" placeholder="Enter user name here...">
+        <br><br>
+        <button id="submit-username" onclick="confUser();">Submit</button>
+        <div class="text">
+            <p>Username <strong>must</strong> be as per below rules:</p>
+            <ul id="rules-list">
+                <li>It should be at least 5 characters long.</li>
+                <li>It should be at most 20 characters long.</li>
+                <li>It can contain english alphabets(Both cases acceptable).</li>
+                <li>It can contain numbers(0 - 9).</li>
+                <li>It can contain an underscore (_) character.</li>
+            </ul>
+        </div>
+    </div>
+    <div id="page1">
+        <h1 class="titles">Please Fill Your Bingo Matrix !</h1>
+        <br><br>
+        <div id="matrix-input-div">
+            <table id = "input-table" class="table1"></table>
+            <table id = "output-table" class="table2"></table>
+        </div>
+        <br><br>
+        <button id="reset-button" onclick="resetTable();">Reset Matrix</button>
+        <br><br>
+        <button id="random-input-matrix" onclick="createRandomInput();">Create Random Matrix</button>
+        <br><br>
+        <button id="play-with-bot" onclick="confMatrix(playWithBot);">Play with bot</button>
+        <button id="host-game" onclick="confMatrix(gameLobby);">Host game</button>
+        <button id="join-game" onclick="confMatrix(gameLobby);">Join game</button>
+    </div>
+    <div id='page2'>
+        <h1 class="titles">Game Lobby</h1>
+        <br><br>
+        <div class="text">
+            <p>Current players:</p>
+            <ol id="players-list">
+            </ol>
+            <p id="game-status"></p>
+        </div>
+        <button id="share-room" onclick="copyText();">Share my room</button>
+        <button id="start-game" onclick="playGame();" disabled>Start Game</button>
+        <br>
+        <p class="text" id="copied-text"></p>
+    </div>
+    <div id='page3'>
+        <h1 class="titles">Let's Play !</h1>
+        <br><br>
+        <div>
+            <img src="images/B.png" alt="Letter B" id = "u1" class="bingo_letters" />
+            <img src="images/I.png" alt="Letter I" id = "u2" class="bingo_letters" />
+            <img src="images/N.png" alt="Letter N" id = "u3" class="bingo_letters" />
+            <img src="images/G.png" alt="Letter G" id = "u4" class="bingo_letters" />
+            <img src="images/O.png" alt="Letter O" id = "u5" class="bingo_letters" />
+        </div>
+        <br><br><br>
+        <table id = "gaming-table"></table>
+        <br><br>
+        <h1 id = "end-result"></h1>
+        <button id="replay" onclick="replay();" disabled>Replay</button>
+    </div>
 	<title>Let's Play Bingo!!!</title>
 	<link rel="stylesheet" href="styles.css" />
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
 	<script async src ="script.js" ></script>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body id="body">
-	<div id="page1">
-		<h1 class="titles">Please Fill Your Bingo Matrix !</h1>
+	<br><br>
+	<div id = "page0">
+		<input type="text" id="user-name" placeholder="Enter user name here...">
 		<br><br>
+		<button id="nextpage" onclick="confUser();">Submit</button>
+		<p style="font-size: 1.6vw;">Username <strong>must</strong> be as per below rules:</p>
+		<ul style="display: inline-block; text-align: left; font-size: 1.6vw;">
+			<li>It should be at least 5 characters long.</li>
+			<li>It should be at most 20 characters long.</li>
+			<li>It can contain english alphabets(Both cases acceptable).</li>
+			<li>It can contain numbers(0 - 9).</li>
+			<li>It can contain an underscore (_) character.</li>
+		</ul>
+	</div>
+	<div id="page1">
+		<h1>Please Fill Your Bingo Matrix !</h1>
+		<br>
 		<div style="width: 80%; margin-left: 2%;">
 			<table id = "input-table" class="table1"></table>
 			<table id = "output-table" class="table2"></table>
 		</div>
 		<br><br>
 		<button id="nextpage" onclick="resetTable();" style="margin-left: 17.5%;">Reset Matrix</button>
-		<br>
-		<br>
+		<br><br>
 		<button id="random-input-matrix" onclick="createRandomInput();">Create Random Matrix</button>
-		<br>
-		<br>
-		<button id="nextpage" onclick="confCheck('page1','page2');">Confirm</button>
+		<br><br>
+		<button id="nextpage" onclick="confMatrix();">Confirm</button>
 	</div>
 	<div id='page2'>
-		<h1 class="titles">Let's Play !</h1>
+		<h1>Let's Play !</h1>
 		<br><br>
 		<div>
 			<img src="images/B.png" id = "u1" class="bingo_letters bingo-image"></img>
@@ -40,5 +123,6 @@
 		<h1 id = "end-result"></h1>
 		<button id="replay" onclick="replay();" disabled="true">Replay</button>
 	</div>
+	<p id="game-status"></p>
 </body>
 </html>
