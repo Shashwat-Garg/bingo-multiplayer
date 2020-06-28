@@ -2,32 +2,223 @@
 const tags = {
     COUNT_USER: 'countUser',
     COUNT_BOT: 'countBot',
-    ELEMENT: 'element'
+    ELEMENT: 'element',
+    ADD_TO_ROOM: 'addToRoom'
 };
 
 // Row and column dynamic variables
 var row = 0, col = 0;
 
 // ********** Creating Socket *****
-var socket = io.connect("wss://bingo-multiplayer.herokuapp.com");
+// var socket = io.connect("wss://bingo-multiplayer.herokuapp.com");
+var socket = io.connect("http://localhost:5000");
 
 // Player's turn variable
-var playerTurn;
+var playerTurn = false;
 
 // Storing username
 var userName = document.getElementById("user-name").value;
 document.getElementById("user-name").value = "";
 
+// To trigger submit button by pressing enter
+var trigEnter = document.getElementById("user-name");
+trigEnter.addEventListener("keyup", function(event) {
+    if(event.keyCode == 13) {
+        event.preventDefault();
+        document.getElementById("submit-username").click();
+    }
+});
+
 // Creating input and output tables
 var input = document.getElementById("input-table");
 var output = document.getElementById("output-table");
 outputInitializer(output);
-inputTable(input, output, "input_");
+inputTable(output);
 
 // Creating gaming gnd bot's table
 var gamingTable = document.getElementById("gaming-table");
 
+// If host disconnects, alert the client
+socket.on('hostDisconnected', function() {
+    alert('Host has disconnected! Redirecting to home page...');
+    window.location.href = window.location.pathname;
+});
+
+// Listener to check if host can start the game
+socket.on('countUsers', function(data) {
+    document.getElementById('players-list').innerHTML = null;
+    var list = document.getElementById('players-list');
+    var entry = document.createElement('li');
+    entry.appendChild(document.createTextNode(data.players[0] + ' (Host)'));
+    list.appendChild(entry);
+    for(var i = 1;i < data.count; i++) {
+        var entry = document.createElement('li');
+        entry.appendChild(document.createTextNode(data.players[i]));
+        list.appendChild(entry);
+    }
+    if(data.count >= 2) {
+        if(urlQuery()) {
+            document.getElementById("game-status").innerHTML = 'Waiting for host to start game...';
+        }
+        else {
+            document.getElementById("game-status").innerHTML = 'You can start the game now...';
+        }
+        document.getElementById("start-game").disabled = false;
+    }
+    else {
+        if(urlQuery()) {
+            document.getElementById("game-status").innerHTML = 'Waiting for host to start game...';
+        }
+        else {
+            document.getElementById("game-status").innerHTML = 'Waiting for more players...';
+        }
+        document.getElementById("start-game").disabled = true;
+    }
+});
+
+// Listener to get game status from server
+socket.on('sendData', function(data) {
+    if(data.success) {
+        if(data.turn == userName) {
+            playerTurn = true;
+        }
+        if(data[tags.ELEMENT]) {
+            disableUserCell(data[tags.ELEMENT]);
+            bingoTicks(data[tags.COUNT_USER]);
+        }
+    }
+    else {
+        alert(data.error);
+    }
+});
+
+// Listener to declare game has ended
+socket.on('gameHasEnded', function(data) {
+    document.getElementById("replay").disabled = false;
+    disableAll(gamingTable);
+    console.log(data);
+    if(data.draw) {
+        document.getElementById("end-result").innerHTML = 'It was a draw!';
+    }
+    else if(data.winner == userName) {
+        document.getElementById("end-result").innerHTML = 'You won!';
+    }
+    else {
+        document.getElementById("end-result").innerHTML = data.winner + ' won :(';
+    }
+});
+
+// Listener to declare game has started
+socket.on('gameHasStarted', function() {
+    document.getElementById("page2").style.display = "none";
+    document.getElementById("page3").style.display = "inline-block";
+    outputBasedInputTable(output);
+});
+
 // *****Functions******
+
+// Function to get query from url
+function urlQuery() {
+    var params = new URLSearchParams(window.location.search);
+    return params.get('room');
+}
+
+// Function to start user's game with other user(s)
+function playGame() {
+    var obj = {
+        username: userName
+    };
+    playerTurn = true;
+    socket.emit('hostStartedGame', obj);
+}
+
+// Output table based input table function
+function outputBasedInputTable(knownTable) {
+    for(var i = 0;i < 5; i++) {
+        var tr = document.createElement("tr");
+        for(var j = 0;j < 5; j++) {
+            var td = document.createElement("td");
+            td.innerHTML = knownTable.rows[i].cells[j].innerHTML;
+            td.className = "button button1";
+            td.onclick = function() {
+                if(playerTurn) {
+                    playerTurn = false;
+                    Disable(this);
+                    var obj = {
+                        username: userName,
+                        element: parseInt(this.innerHTML, 10)
+                    };
+                    if(urlQuery()) {
+                        obj[tags.ADD_TO_ROOM] = urlQuery();
+                    }
+                    socket.emit('userSelectedElement', obj);
+                }
+            }
+            tr.appendChild(td);
+        }
+        gamingTable.appendChild(tr);
+    }
+}
+
+// Function to direct user to game lobby
+function gameLobby() {
+    document.getElementById("page2").style.display = "inline-block";
+    if(urlQuery()) {
+        document.getElementById("start-game").style.display = "none";
+        var JSobj = {
+            username: userName,
+            addToRoom: urlQuery()
+        };
+        socket.emit('addThisUserToRoom', JSobj, function(retObj) {
+            if(! retObj.success) {
+                alert(retObj.error);
+            }
+        });
+    }
+    else {
+        var obj = {
+            username: userName
+        };
+        socket.emit('modifyHost', obj);
+    }
+}
+
+// Function to make user play with bot
+function playWithBot() {
+    document.getElementById("page3").style.display = "inline-block";
+    var obj = {
+        username: userName
+    };
+    playerTurn = true;
+    socket.emit('createBotMatrix', obj, function(data) {
+        if(data.success) {
+            socket.emit('hostStartedGame', obj);
+        }
+        else {
+            alert(data.error);
+        }
+    });
+}
+
+// Function to copy text to clipboard
+function copyText() {
+    var cText = document.createElement("input");
+    if(urlQuery()) {
+        cText.value = window.location;
+    }
+    else {
+        cText.value = window.location + "?room=" + userName;
+    }
+    document.body.appendChild(cText);
+    cText.select();
+    cText.setSelectionRange(0, 99999);
+    document.execCommand("copy");
+    document.body.removeChild(cText);
+    document.getElementById('copied-text').innerHTML = 'URL copied !';
+    setTimeout(function() {
+        document.getElementById('copied-text').innerHTML = null;
+    }, 3000);
+}
 
 // Function to check if username is correctly entered
 function confUser() {
@@ -35,9 +226,17 @@ function confUser() {
     var JSobj = {
         username: userName
     };
+    if(urlQuery()) {
+        JSobj[tags.ADD_TO_ROOM] = urlQuery();
+        document.getElementById("play-with-bot").style.display = "none";
+        document.getElementById("host-game").style.display = "none";
+    }
+    else {
+        document.getElementById("join-game").style.display = "none";
+    }
     socket.emit('userNameInput', JSobj, function(retObj) {
         if(retObj.success) {
-            document.getElementById("page0").style.display= "none";
+            document.getElementById("page0").style.display = "none";
             document.getElementById("page1").style.display = "inline-block";
         }
         else {
@@ -46,11 +245,27 @@ function confUser() {
     });
 }
 // Function to check if matrix is filled completely
-function confMatrix() {
+function confMatrix(callThisFunction) {
     if((row != 5) && (col != 5))
         alert("Please fill matrix completely !");
     else {
-        clearScreen();
+        document.getElementById("page1").style.display = "none";
+        var JSobj = {
+            username: userName
+        }
+        if(urlQuery()) {
+            JSobj[tags.ADD_TO_ROOM] = urlQuery();
+        }
+        socket.emit('convertUserTableTo2D', JSobj, function(data) {
+            if(data.success) {
+                row = 0;
+                col = 0;
+                callThisFunction.call();
+            }
+            else {
+                alert(data.error);
+            }
+        });
     }
 }
 
@@ -61,10 +276,13 @@ function resetTable() {
     output.innerHTML = null;
     outputInitializer(output);
     input.innerHTML = null;
-    inputTable(input, output, "input_");
+    inputTable(output);
     var JSobj = {
         username: userName
     };
+    if(urlQuery()) {
+        JSobj[tags.ADD_TO_ROOM] = urlQuery();
+    }
     socket.emit('resetMatrix', JSobj);
 }
 
@@ -97,13 +315,13 @@ function outputInitializer(table) {
 }
 
 // Input table function
-function inputTable(table, outputTable, cellId) {
+function inputTable(outputTable) {
     var cnt = 1;
     for(var i = 0;i < 5;i++) {  
         var tr = document.createElement("tr");
         for(var j = 0;j < 5;j++) {  
             var td = document.createElement("td");
-            td.id = cellId;
+            td.id = "input_";
             if(cnt % 10 == cnt) {
                 td.innerHTML = "0";
                 td.id += "0";
@@ -116,6 +334,9 @@ function inputTable(table, outputTable, cellId) {
                     username: userName,
                     element:  parseInt(this.innerHTML, 10)
                 };
+                if(urlQuery()) {
+                    JSobj[tags.ADD_TO_ROOM] = urlQuery();
+                }
                 socket.emit('matrixElementInput', JSobj);
                 Disable(this);
                 AddArr(this, outputTable);
@@ -123,57 +344,10 @@ function inputTable(table, outputTable, cellId) {
             tr.appendChild(td);
             cnt++;
         }
-        table.appendChild(tr);
+        input.appendChild(tr);
     }
 }
 
-// Output table based input table function
-function outputBasedInputTable(table, knownTable) {
-    for(var i = 0;i < 5;i++) {  
-        var tr = document.createElement("tr");
-        for(var j = 0;j < 5;j++) {  
-            var td = document.createElement("td");
-            td.innerHTML = knownTable.rows[i].cells[j].innerHTML;
-            td.className = "button button1";
-            td.id = [i, j];
-            td.onclick = function() {
-                if(playerTurn) {
-                    playerTurn = false;
-                    Disable(this);
-                    var obj = {
-                        username: userName,
-                        element: parseInt(this.innerHTML, 10)
-                    };
-                    socket.emit('userSelection', obj, function(data) {
-                        if(data.success) {
-                            playerTurn = true;
-                            disableUserCell(data[tags.ELEMENT]);
-                            bingoTicks(data[tags.COUNT_USER]);
-                            if((data[tags.COUNT_USER] == 5) || (data[tags.COUNT_BOT] == 5)) {
-                                disableAll(table);
-                                document.getElementById("replay").disabled = false;
-                            }
-                            if((data[tags.COUNT_USER] == 5 ) && (data[tags.COUNT_BOT] == 5)) {
-                                document.getElementById("end-result").innerHTML = "It Was A Draw !!!";
-                            }
-                            else if(data[tags.COUNT_USER] == 5) {
-                                document.getElementById("end-result").innerHTML = "You Won !!!";
-                            }
-                            else if(data[tags.COUNT_BOT] == 5) {
-                                document.getElementById("end-result").innerHTML = "Bot Won :(";
-                            }
-                        }
-                        else {
-                            alert(data.error);
-                        }
-                    });
-                }
-            }
-            tr.appendChild(td);
-        }
-        table.appendChild(tr);
-    }
-}
 
 // Function to show the current bingo ticks
 function bingoTicks(cnt) {
@@ -200,6 +374,9 @@ function createRandomTable(table, clName) {
     var JSobj = {
         username: userName
     };
+    if(urlQuery()) {
+        JSobj[tags.ADD_TO_ROOM] = urlQuery();
+    }
     socket.emit('requestRandomMatrix', JSobj, function(data) {
         if(data.success) {
             var a = Array.from(data.matrix);
@@ -252,27 +429,6 @@ function AddArr(button, outputTable) {
     outputTable.rows[row].cells[col].style.color = "black";
 }
 
-// Function to proceed to next page
-function clearScreen() {
-    document.getElementById("page1").style.display = "none";
-    document.getElementById("page2").style.display = "inline-block";
-    row = 0;
-    col = 0;
-    playerTurn = true;
-    var obj = {
-        username: userName
-    };
-    socket.emit('createBotMatrix', obj, function(data) {
-        if(data.success) {
-            outputBasedInputTable(gamingTable, output);
-        }
-        else {
-            alert(data.error);
-        }
-    });
-}
-
-
 // Function to disable user's table cell
 function disableUserCell(target) {
     for(var i = 0;i < 5;i++) {
@@ -286,6 +442,6 @@ function disableUserCell(target) {
 }
 
 function replay() {
-    window.location.reload();
+    window.location.reload(true);
 }
 //  *****End Of Functions*****

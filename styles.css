@@ -2,6 +2,10 @@
     font-size: 3.2vw;
     width: 40vw;
 }
+.text {
+    font-size: 3vw;
+    text-align: center;
+}
 .table1 {
     border-collapse: collapse;
     float: left;
@@ -65,12 +69,7 @@
     text-align: center;
     width: 100%;
 }
-#page1 {
-    text-align: center;
-    display: none;
-    width: 100%;
-}
-#page2 {
+#page1, #page2, #page3 {
     text-align: center;
     display: none;
     width: 100%;
@@ -91,11 +90,11 @@
 #matrix-input-div {
     width: 100%;
 }
-#username-rules {
+/*#username-rules {
     font-size: 3vw;
     text-align: center;
-}
-#rules-list {
+}*/
+#rules-list, #players-list {
     display: inline-block;
     text-align: left;
 }
@@ -135,7 +134,10 @@
     #reset-button {
         margin-left: 30%;
     }
-    #username-rules {
+    /*#username-rules {
+        font-size: 1.6vw;
+    }*/
+    .text {
         font-size: 1.6vw;
     }
 }
