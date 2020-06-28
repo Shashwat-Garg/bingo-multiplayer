@@ -2,11 +2,19 @@
 const http = require('http');
 const io = require('socket.io');
 const validator = new (require('jsonschema').Validator)();
+const asyncLoop = require('async').forEach;
 
 // Constants used in the script
 const port = process.env.PORT || 5000;
+const status = {
+    WAITING_FOR_PLAYERS: 'waitingForPlayers',
+    GAME_STARTED: 'gameStarted',
+    GAME_ENDED: 'gameEnded',
+    NOT_STARTED: 'notStarted'
+};
 const tags = {
     USERNAME: 'username',
+    ADD_TO_ROOM: 'addToRoom',
     USER_TABLE: 'userTable',
     BOT_TABLE: 'botTable',
     ELEMENT: 'element',
@@ -15,7 +23,11 @@ const tags = {
     COUNT_USER: 'countUser',
     COUNT_BOT: 'countBot',
     LEFT_ARRAY: 'leftArray',
-    SOCKET_ID : 'id'
+    SOCKET_ID : 'id',
+    GAME_STATUS: 'gameStatus',
+    CURR_ROOM: 'currRoom',
+    PLAYERS: 'players',
+    PLAYER_TURN: 'playerTurn'
 };
 
 // Declaring required schemas
@@ -31,7 +43,7 @@ const userNameSchema = {
     pattern: /^[A-Za-z0-9_.]+$/
 };
 
-// Initialising rooms
+// Initializing required variables
 var rooms = {};
 
 // Start the server at port 3000
@@ -55,7 +67,8 @@ socket.on('connect', function(client) {
         var schema = {
             type: 'object',
             properties: {
-                username: userNameSchema
+                username: userNameSchema,
+                addToRoom: userNameSchema
             },
             required: [tags.USERNAME],
             additionalProperties: false
@@ -74,46 +87,153 @@ socket.on('connect', function(client) {
             };
             callback(errorObj);
         }
+        else if(data[tags.USERNAME] == data[tags.ADD_TO_ROOM]) {
+            var errorObj = {
+                success: false,
+                error: 'Room already exists!'
+            };
+            callback(errorObj);
+        }
         else {
             var arr = new Array(5);
             var arr2 = new Array(5);
+            var arr3 = new Array(5);
             var cnt = 0;
             var leftArray = new Array(25);
             for(var i = 0;i < 5;i++) {
                 arr[i] = new Array(5);
                 arr2[i] = new Array(5);
+                arr3[i] = new Array(5);
                 for(var j = 0;j < 5;j++) {
                     arr[i][j] = 0;
                     arr2[i][j] = 0;
+                    arr3[i][j] = 0;
                     leftArray[cnt] = cnt + 1;
                     cnt++;
                 }
             }
-            rooms[data[tags.USERNAME]] = {
-                leftArray: leftArray,
-            };
-            rooms[data[tags.USERNAME]][data[tags.USERNAME]] = {
-                arrBot: arr,
-                arrUser: arr2,
-                userTable: [],
-                botTable: [],
-                countUser: [0],
-                countBot: [0]
-            };
-            // console.log(data);
-            var successObj = {
-                success: true,
-                error: ""
-            };
-            client[tags.USERNAME] = data[tags.USERNAME];
-            callback(successObj);
+            if(data[tags.ADD_TO_ROOM] && rooms[data[tags.ADD_TO_ROOM]]) {
+                if(rooms[data[tags.ADD_TO_ROOM]][tags.GAME_STATUS] == status.NOT_STARTED) {
+                    var errorObj = {
+                        success: false,
+                        error: 'Game not hosted yet!'
+                    };
+                    callback(errorObj);
+                }
+                else if(rooms[data[tags.ADD_TO_ROOM]][tags.GAME_STATUS] == status.GAME_ENDED){
+                    var errorObj = {
+                        success: false,
+                        error: 'Game has ended!'
+                    };
+                    callback(errorObj);
+                }
+                else if(rooms[data[tags.ADD_TO_ROOM]][tags.GAME_STATUS] == status.WAITING_FOR_PLAYERS) {
+                    if(rooms[data[tags.ADD_TO_ROOM]][tags.PLAYERS].length == 2) {
+                        var errorObj = {
+                            success: false,
+                            error: 'Maximum 2 players allowed in one room!'
+                        };
+                        callback(errorObj);
+                    }
+                    else {
+                        rooms[data[tags.USERNAME]] = {
+                            id: client[tags.SOCKET_ID]
+                        };
+                        rooms[data[tags.ADD_TO_ROOM]][data[tags.USERNAME]] = {
+                            arrUser: arr3,
+                            userTable: [],
+                            countUser: [0]
+                        };
+                        var successObj = {
+                            success: true,
+                            error: ""
+                        };
+                        callback(successObj);
+                    }
+                }
+                else {
+                    var errorObj = {
+                        success: false,
+                        error: 'Host has already started the game!'
+                    };
+                    callback(errorObj);
+                }
+            }
+            else {
+                rooms[data[tags.USERNAME]] = {
+                    leftArray: leftArray,
+                    gameStatus: status.NOT_STARTED,
+                    id: client[tags.SOCKET_ID]
+                };
+                client.join(data[tags.USERNAME]);
+                rooms[data[tags.USERNAME]][data[tags.USERNAME]] = {
+                    arrBot: arr,
+                    arrUser: arr2,
+                    userTable: [],
+                    botTable: [],
+                    countUser: [0],
+                    countBot: [0]
+                };
+                // console.log(rooms);
+                var successObj = {
+                    success: true,
+                    error: ""
+                };
+                client[tags.USERNAME] = data[tags.USERNAME];
+                client[tags.CURR_ROOM] = data[tags.USERNAME];
+                callback(successObj);
+            }
         }
     });
-    client.on('matrixElementInput', function(obj) {
+    client.on('addThisUserToRoom', function(data, callback) {
         var schema = {
             type: 'object',
             properties: {
                 username: userNameSchema,
+                addToRoom: userNameSchema
+            },
+            required: [tags.USERNAME,tags.ADD_TO_ROOM],
+            additionalProperties: false
+        };
+        if((!data) || (validator.validate(data, schema).errors.length > 0)) {
+            var errorObj = {
+                success: false,
+                error: 'Invalid username!'
+            };
+            callback(errorObj);
+        }
+        else if(data[tags.ADD_TO_ROOM]) {
+            rooms[data[tags.ADD_TO_ROOM]][tags.PLAYERS].push(data[tags.USERNAME]);
+            client.join(data[tags.ADD_TO_ROOM]);
+            client[tags.USERNAME] = data[tags.USERNAME];
+            client[tags.CURR_ROOM] = data[tags.ADD_TO_ROOM];
+            // console.log(rooms);
+            // console.log(rooms[data[tags.ADD_TO_ROOM]][data[tags.USERNAME]]);
+            var successObj = {
+                success: true,
+                error: ''
+            };
+            callback(successObj);
+            var obj = {
+                count: rooms[data[tags.ADD_TO_ROOM]][tags.PLAYERS].length,
+                players: rooms[data[tags.ADD_TO_ROOM]][tags.PLAYERS]
+            };
+            socket.in(data[tags.ADD_TO_ROOM]).emit('countUsers', obj);
+        }
+        else {
+            var errorObj = {
+                success: false,
+                error: 'Username already exists!'
+            };
+            callback(errorObj);
+        }
+    });
+
+    client.on('matrixElementInput', function(obj) {
+        var schema = {
+            type: 'object',
+            properties: {
+                addToRoom: userNameSchema,
                 element: intSchema
             },
             required: [tags.USERNAME,tags.ELEMENT],
@@ -125,16 +245,21 @@ socket.on('connect', function(client) {
                 client.disconnect(true);
             }
         }
+        else if(obj[tags.ADD_TO_ROOM]) {
+            rooms[obj[tags.ADD_TO_ROOM]][obj[tags.USERNAME]][tags.USER_TABLE].push(obj[tags.ELEMENT]);
+        }
         else {
             rooms[obj[tags.USERNAME]][obj[tags.USERNAME]][tags.USER_TABLE].push(obj[tags.ELEMENT]);
             // console.log(rooms[obj[tags.USERNAME]][obj[tags.USERNAME]][tags.USER_TABLE]);
         }
     });
+
     client.on('resetMatrix', function(obj) {
         var schema = {
             type: 'object',
             properties: {
-                username: userNameSchema
+                username: userNameSchema,
+                addToRoom: userNameSchema
             },
             required: [tags.USERNAME],
             additionalProperties: false
@@ -144,17 +269,22 @@ socket.on('connect', function(client) {
             if(client[tags.SOCKET_ID] in socket.sockets.connected) {
                 client.disconnect(true);
             }
+        }
+        else if(obj[tags.ADD_TO_ROOM]) {
+            rooms[obj[tags.ADD_TO_ROOM]][obj[tags.USERNAME]][tags.USER_TABLE] = [];
         }
         else {
             rooms[obj[tags.USERNAME]][obj[tags.USERNAME]][tags.USER_TABLE] = [];
             // console.log(rooms[obj[tags.USERNAME]][obj[tags.USERNAME]][tags.USER_TABLE]);
         }
     });
+
     client.on('requestRandomMatrix', function(obj, callback) {
         var schema = {
             type: 'object',
             properties: {
-                username: userNameSchema
+                username: userNameSchema,
+                addToRoom: userNameSchema
             },
             required: [tags.USERNAME],
             additionalProperties: false
@@ -164,6 +294,21 @@ socket.on('connect', function(client) {
             if(client[tags.SOCKET_ID] in socket.sockets.connected) {
                 client.disconnect(true);
             }
+        }
+        else if(obj[tags.ADD_TO_ROOM]) {
+            var a = new Array(25);
+            for(var i = 0;i < 25; i++) {
+                a[i] = i + 1;
+            }
+            createRandom(a);
+            var randomMatrixObj = {
+                success: true,
+                error: '',
+                matrix: a
+            };
+            rooms[obj[tags.ADD_TO_ROOM]][obj[tags.USERNAME]][tags.USER_TABLE] = a;
+            // console.log(rooms[obj[tags.USERNAME]][obj[tags.USERNAME]][tags.USER_TABLE]);
+            callback(randomMatrixObj);
         }
         else if(obj[tags.USERNAME] in rooms) {
             var a = new Array(25);
@@ -188,6 +333,67 @@ socket.on('connect', function(client) {
             callback(errorObj);
         }
     });
+
+    client.on('convertUserTableTo2D', function(obj, callback) {
+        var schema = {
+            type: 'object',
+            properties: {
+                username: userNameSchema,
+                addToRoom: userNameSchema
+            },
+            required: [tags.USERNAME],
+            additionalProperties: false
+        }
+        if((!obj) || (validator.validate(obj, schema).errors.length > 0)) {
+            console.log("Attempt to breach! Disconnecting socket " + client[tags.SOCKET_ID]);
+            if(client[tags.SOCKET_ID] in socket.sockets.connected) {
+                client.disconnect(true);
+            }
+        }
+        else if(obj[tags.ADD_TO_ROOM]) {
+            var cnt = 0;
+            var temp = rooms[obj[tags.ADD_TO_ROOM]][obj[tags.USERNAME]][tags.USER_TABLE];
+            rooms[obj[tags.ADD_TO_ROOM]][obj[tags.USERNAME]][tags.USER_TABLE] = new Array(5);
+            for(var i = 0;i < 5; i++) {
+                rooms[obj[tags.ADD_TO_ROOM]][obj[tags.USERNAME]][tags.USER_TABLE][i] = new Array(5);
+                for(var j = 0;j < 5; j++) {
+                    rooms[obj[tags.ADD_TO_ROOM]][obj[tags.USERNAME]][tags.USER_TABLE][i][j] = temp[cnt];
+                    cnt++;
+                }
+            }
+            var successObj = {
+                success: true,
+                error: ''
+            };
+            callback(successObj);
+        }
+        else if(obj[tags.USERNAME] in rooms) {
+            var cnt = 0;
+            var temp = rooms[obj[tags.USERNAME]][obj[tags.USERNAME]][tags.USER_TABLE];
+            rooms[obj[tags.USERNAME]][obj[tags.USERNAME]][tags.USER_TABLE] = new Array(5);
+            for(var i = 0;i < 5; i++) {
+                rooms[obj[tags.USERNAME]][obj[tags.USERNAME]][tags.USER_TABLE][i] = new Array(5);
+                for(var j = 0;j < 5; j++) {
+                    rooms[obj[tags.USERNAME]][obj[tags.USERNAME]][tags.USER_TABLE][i][j] = temp[cnt];
+                    cnt++;
+                }
+            }
+            var successObj = {
+                success: true,
+                error: ''
+            };
+            callback(successObj);
+        }
+        else {
+            var errorObj = {
+                success: false,
+                error: 'Username doesn\'t exist!'
+            };
+            callback(errorObj);
+        }
+
+    });
+
     client.on('createBotMatrix', function(obj, callback) {
         var schema = {
             type: 'object',
@@ -204,6 +410,8 @@ socket.on('connect', function(client) {
             }
         }
         else if(obj[tags.USERNAME] in rooms) {
+            rooms[obj[tags.USERNAME]][tags.GAME_STATUS] = status.GAME_STARTED;
+            // console.log(rooms);
             var a = new Array(25);
             for(var i = 0;i < 25; i++) {
                 a[i] = i + 1;
@@ -211,18 +419,15 @@ socket.on('connect', function(client) {
             createRandom(a);
             var a2D = new Array(5);
             var cnt = 0;
-            var temp = rooms[obj[tags.USERNAME]][obj[tags.USERNAME]][tags.USER_TABLE];
-            rooms[obj[tags.USERNAME]][obj[tags.USERNAME]][tags.USER_TABLE] = new Array(5);
             for(var i = 0;i < 5; i++) {
                 a2D[i] = new Array(5);
-                rooms[obj[tags.USERNAME]][obj[tags.USERNAME]][tags.USER_TABLE][i] = new Array(5);
                 for(var j = 0;j < 5; j++) {
                     a2D[i][j] = a[cnt];
-                    rooms[obj[tags.USERNAME]][obj[tags.USERNAME]][tags.USER_TABLE][i][j] = temp[cnt];
                     cnt++;
                 }
             }
             rooms[obj[tags.USERNAME]][obj[tags.USERNAME]][tags.BOT_TABLE] = a2D;
+            // console.log(rooms);
             // console.log(rooms[obj[tags.USERNAME]][obj[tags.USERNAME]][tags.BOT_TABLE]);
             // console.log(rooms[obj[tags.USERNAME]][obj[tags.USERNAME]][tags.USER_TABLE]);
             var successObj = {
@@ -238,12 +443,65 @@ socket.on('connect', function(client) {
             };
             callback(errorObj);
         }
-    })
-    client.on('userSelection', function(obj, callback) {
+    });
+
+    client.on('hostStartedGame', function(data) {
+        var schema = {
+            type: 'object',
+            properties: {
+                username: userNameSchema
+            },
+            required: [tags.USERNAME],
+            additionalProperties: false
+        };
+        if((!data) || (validator.validate(data, schema).errors.length > 0)) {
+            console.log("Attempt to breach! Disconnecting socket " + client[tags.SOCKET_ID]);
+            if(client[tags.SOCKET_ID] in socket.sockets.connected) {
+                client.disconnect(true);
+            }
+        }
+        else {
+            rooms[data[tags.USERNAME]][tags.GAME_STATUS] = status.GAME_STARTED;
+            rooms[data[tags.USERNAME]][tags.PLAYER_TURN] = 0;
+            socket.in(client[tags.USERNAME]).emit('gameHasStarted');
+            // console.log(rooms);
+        }
+    });
+    client.on('modifyHost', function(data) {
+        var schema = {
+            type: 'object',
+            properties: {
+                username: userNameSchema
+            },
+            required: [tags.USERNAME],
+            additionalProperties: false
+        };
+        if((!data) || (validator.validate(data, schema).errors.length > 0)) {
+            console.log("Attempt to breach! Disconnecting socket " + client[tags.SOCKET_ID]);
+            if(client[tags.SOCKET_ID] in socket.sockets.connected) {
+                client.disconnect(true);
+            }
+        }
+        else {
+            delete rooms[data[tags.USERNAME]][data[tags.USERNAME]][tags.ARR_BOT];
+            delete rooms[data[tags.USERNAME]][data[tags.USERNAME]][tags.BOT_TABLE];
+            delete rooms[data[tags.USERNAME]][data[tags.USERNAME]][tags.COUNT_BOT];
+            rooms[data[tags.USERNAME]][tags.GAME_STATUS] = status.WAITING_FOR_PLAYERS;
+            rooms[data[tags.USERNAME]][tags.PLAYERS] = [data[tags.USERNAME]];
+            var obj = {
+                count: rooms[data[tags.USERNAME]][tags.PLAYERS].length,
+                players: rooms[data[tags.USERNAME]][tags.PLAYERS]
+            };
+            socket.in(data[tags.USERNAME]).emit('countUsers', obj);
+            // console.log(rooms);
+        }
+    });
+    client.on('userSelectedElement', function(obj) {
         var schema = {
             type: 'object',
             properties: {
                 username: userNameSchema,
+                addToRoom: userNameSchema,
                 element: intSchema
             },
             required: [tags.USERNAME,tags.ELEMENT],
@@ -255,43 +513,190 @@ socket.on('connect', function(client) {
                 client.disconnect(true);
             }
         }
-        else if(obj[tags.USERNAME] in rooms) {
-            modArr(rooms[obj[tags.USERNAME]], obj, obj[tags.ELEMENT]);
+        else if(obj[tags.ADD_TO_ROOM]) {
+            if(rooms[obj[tags.ADD_TO_ROOM]][tags.LEFT_ARRAY].indexOf(obj[tags.ELEMENT]) < 0) {
+                var errorObj = {
+                    success: false,
+                    error: 'Value cannot be selected!'
+                };
+                client.emit('sendData', errorObj);
+            }
+            else {
+                // console.log('player selected an element');
+                modLeftArr(obj[tags.ADD_TO_ROOM], obj[tags.ELEMENT]);
+                rooms[obj[tags.ADD_TO_ROOM]][tags.PLAYER_TURN]++;
+                asyncLoop(rooms[obj[tags.ADD_TO_ROOM]][tags.PLAYERS], function(key, next) {
+                    modUserArr(obj[tags.ADD_TO_ROOM], key, tags.ARR_USER, tags.USER_TABLE, obj[tags.ELEMENT]);
+                    rooms[obj[tags.ADD_TO_ROOM]][key][tags.COUNT_USER][0] = checkBingo(rooms[obj[tags.ADD_TO_ROOM]][key][tags.ARR_USER]);
+                    var retObj = {
+                        success: true,
+                        error: '',
+                        turn: rooms[obj[tags.ADD_TO_ROOM]][tags.PLAYERS]
+                        [(rooms[obj[tags.ADD_TO_ROOM]][tags.PLAYER_TURN]) % Object.keys(rooms[obj[tags.ADD_TO_ROOM]][tags.PLAYERS]).length]
+                    };
+                    var temp = rooms[obj[tags.ADD_TO_ROOM]][key];
+                    var winnerObj = {
+                        winner: '',
+                        draw: false
+                    };
+                    if(temp[tags.COUNT_USER][0] == 5) {
+                        if(rooms[obj[tags.ADD_TO_ROOM]][tags.GAME_STATUS] == status.GAME_ENDED) {
+                            winnerObj.draw = true;
+                        }
+                        else {
+                            rooms[obj[tags.ADD_TO_ROOM]][tags.GAME_STATUS] = status.GAME_ENDED;
+                            winnerObj.winner = key;
+                        }
+                        socket.in(obj[tags.ADD_TO_ROOM]).emit('gameHasEnded', winnerObj);
+                    }
+                    retObj[tags.COUNT_USER] = temp[tags.COUNT_USER][0];
+                    retObj[tags.ELEMENT] = obj[tags.ELEMENT];
+                    socket.to(rooms[key][tags.SOCKET_ID]).emit('sendData', retObj);
+                    // console.log(rooms);
+                    next();
+                }, function(err) {
+                    if(err) throw err;
+                });
+            }
+        }
+        else if(rooms[obj[tags.USERNAME]][tags.LEFT_ARRAY].indexOf(obj[tags.ELEMENT]) < 0) {
+            // console.log(rooms[obj[tags.USERNAME]][tags.LEFT_ARRAY]);
+            // console.log(obj[tags.ELEMENT]);
+            var errorObj = {
+                success: false,
+                error: 'Value cannot be selected!'
+            };
+            client.emit('sendData', errorObj);
+        }
+        else if(rooms[obj[tags.USERNAME]][obj[tags.USERNAME]][tags.COUNT_BOT]) {
+            modUserArr(obj[tags.USERNAME], obj[tags.USERNAME], tags.ARR_USER, tags.USER_TABLE, obj[tags.ELEMENT]);
+            modUserArr(obj[tags.USERNAME], obj[tags.USERNAME], tags.ARR_BOT, tags.BOT_TABLE, obj[tags.ELEMENT]);
+            modLeftArr(obj[tags.USERNAME], obj[tags.ELEMENT]);
             rooms[obj[tags.USERNAME]][obj[tags.USERNAME]][tags.COUNT_USER][0] = checkBingo(rooms[obj[tags.USERNAME]][obj[tags.USERNAME]][tags.ARR_USER]);
             rooms[obj[tags.USERNAME]][obj[tags.USERNAME]][tags.COUNT_BOT][0] = checkBingo(rooms[obj[tags.USERNAME]][obj[tags.USERNAME]][tags.ARR_BOT]);
             // console.log('Before timeout',rooms[obj[tags.USERNAME]][obj[tags.USERNAME]]);
+            var winnerObj = {
+                winner: '',
+                draw: false
+            };
             var retObj = {
                 success: true,
-                countUser: rooms[obj[tags.USERNAME]][obj[tags.USERNAME]][tags.COUNT_USER][0],
-                countBot: rooms[obj[tags.USERNAME]][obj[tags.USERNAME]][tags.COUNT_BOT][0],
-                element: 'NA',
+                turn: obj[tags.USERNAME],
                 error: ''
             };
-            if((retObj[tags.COUNT_USER] == 5) || (retObj[tags.COUNT_BOT] == 5)) {
-                callback(retObj);
+            var temp = rooms[obj[tags.USERNAME]][obj[tags.USERNAME]];
+            if((temp[tags.COUNT_USER][0] == 5) && (temp[tags.COUNT_BOT][0] == 5)) {
+                winnerObj.draw = true;
+            }
+            else if(temp[tags.COUNT_USER][0] == 5) {
+                winnerObj.winner = obj[tags.USERNAME];
+            }
+            else if(temp[tags.COUNT_BOT][0] == 5) {
+                winnerObj.winner = 'Bot';
+            }
+            if((temp[tags.COUNT_USER][0] == 5) || (temp[tags.COUNT_BOT][0] == 5)) {
+                rooms[obj[tags.USERNAME]][tags.GAME_STATUS] = status.GAME_ENDED;
+                socket.in(obj[tags.USERNAME]).emit('gameHasEnded', winnerObj);
+                // console.log(temp);
             }
             setTimeout(function () {
                 var target = botMove(rooms[obj[tags.USERNAME]]);
-                modArr(rooms[obj[tags.USERNAME]], obj, parseInt(target, 10));
+                modUserArr(obj[tags.USERNAME], obj[tags.USERNAME], tags.ARR_USER, tags.USER_TABLE, parseInt(target, 10));
+                modUserArr(obj[tags.USERNAME], obj[tags.USERNAME], tags.ARR_BOT, tags.BOT_TABLE, parseInt(target, 10));
+                modLeftArr(obj[tags.USERNAME], parseInt(target, 10));
                 rooms[obj[tags.USERNAME]][obj[tags.USERNAME]][tags.COUNT_USER][0] = checkBingo(rooms[obj[tags.USERNAME]][obj[tags.USERNAME]][tags.ARR_USER]);
                 rooms[obj[tags.USERNAME]][obj[tags.USERNAME]][tags.COUNT_BOT][0] = checkBingo(rooms[obj[tags.USERNAME]][obj[tags.USERNAME]][tags.ARR_BOT]);
                 // console.log('After timeout',rooms[obj[tags.USERNAME]][obj[tags.USERNAME]]);
+                temp = rooms[obj[tags.USERNAME]][obj[tags.USERNAME]];
+                if((temp[tags.COUNT_USER][0] == 5) && (temp[tags.COUNT_BOT][0] == 5)) {
+                    winnerObj.draw = true;
+                }
+                else if(temp[tags.COUNT_USER][0] == 5) {
+                    winnerObj.winner = obj[tags.USERNAME];
+                }
+                else if(temp[tags.COUNT_BOT][0] == 5) {
+                    winnerObj.winner = 'Bot';
+                }
+                if((temp[tags.COUNT_USER][0] == 5) || (temp[tags.COUNT_BOT][0] == 5)) {
+                    if(rooms[obj[tags.USERNAME]][tags.GAME_STATUS] != status.GAME_ENDED) {
+                        rooms[obj[tags.USERNAME]][tags.GAME_STATUS] = status.GAME_ENDED;
+                        socket.in(obj[tags.USERNAME]).emit('gameHasEnded', winnerObj);
+                    }
+                }
                 retObj[tags.COUNT_USER] = rooms[obj[tags.USERNAME]][obj[tags.USERNAME]][tags.COUNT_USER][0];
-                retObj[tags.COUNT_BOT] = rooms[obj[tags.USERNAME]][obj[tags.USERNAME]][tags.COUNT_BOT][0];
                 retObj[tags.ELEMENT] = target;
-                callback(retObj);
+                socket.in(client[tags.USERNAME]).emit('sendData', retObj);
+                // console.log(temp);
             }, 700);
+        }
+        else if(obj[tags.USERNAME] in rooms) {
+            // console.log('host selected element');
+            modLeftArr(obj[tags.USERNAME], obj[tags.ELEMENT]);
+            rooms[obj[tags.USERNAME]][tags.PLAYER_TURN]++;
+            // console.log(rooms);
+            asyncLoop(rooms[obj[tags.USERNAME]][tags.PLAYERS], function(key, next) {
+                modUserArr(obj[tags.USERNAME], key, tags.ARR_USER, tags.USER_TABLE, obj[tags.ELEMENT]);
+                rooms[obj[tags.USERNAME]][key][tags.COUNT_USER][0] = checkBingo(rooms[obj[tags.USERNAME]][key][tags.ARR_USER]);
+                var retObj = {
+                    success: true,
+                    error: '',
+                    turn: rooms[obj[tags.USERNAME]][tags.PLAYERS]
+                    [(rooms[obj[tags.USERNAME]][tags.PLAYER_TURN]) % Object.keys(rooms[obj[tags.USERNAME]][tags.PLAYERS]).length]
+                };
+                var temp = rooms[obj[tags.USERNAME]][key];
+                var winnerObj = {
+                    winner: '',
+                    draw: false
+                };
+                if(temp[tags.COUNT_USER][0] == 5) {
+                    if(rooms[obj[tags.USERNAME]][tags.GAME_STATUS] == status.GAME_ENDED) {
+                        winnerObj.draw = true;
+                    }
+                    else {
+                        rooms[obj[tags.USERNAME]][tags.GAME_STATUS] = status.GAME_ENDED;
+                        winnerObj.winner = key;
+                    }
+                    socket.in(obj[tags.USERNAME]).emit('gameHasEnded', winnerObj);
+                }
+                retObj[tags.COUNT_USER] = temp[tags.COUNT_USER][0];
+                retObj[tags.ELEMENT] = obj[tags.ELEMENT];
+                socket.to(rooms[key][tags.SOCKET_ID]).emit('sendData', retObj);
+                // console.log(rooms);
+                next();
+            }, function(err) {
+                if(err) throw err;
+            });
         }
         else {
             var errorObj = {
                 success: false,
                 error: 'Username doesn\'t exist!'
             };
-            callback(errorObj);
+            client.emit('sendData', errorObj);
         }
     });
     client.on('disconnect', function() {
-        delete rooms[client[tags.USERNAME]];
+        if((client[tags.USERNAME] != null) && (client[tags.USERNAME] == client[tags.CURR_ROOM])) {
+            client.to(client[tags.USERNAME]).emit('hostDisconnected');
+            asyncLoop(rooms[client[tags.USERNAME]][tags.PLAYERS], function(key, next) {
+                delete rooms[client[tags.USERNAME]][key];
+                next();
+            }, function(err) {
+                if(err) throw err;
+            });
+            delete rooms[client[tags.USERNAME]];
+        }
+        else if(rooms[client[tags.CURR_ROOM]]) {
+            delete rooms[client[tags.USERNAME]];
+            delete rooms[client[tags.CURR_ROOM]][client[tags.USERNAME]];
+            var index = rooms[client[tags.CURR_ROOM]][tags.PLAYERS].indexOf(client[tags.USERNAME]);
+            if (index !== -1) rooms[client[tags.CURR_ROOM]][tags.PLAYERS].splice(index, 1);
+            var obj = {
+                count: rooms[client[tags.CURR_ROOM]][tags.PLAYERS].length,
+                players: rooms[client[tags.CURR_ROOM]][tags.PLAYERS]
+            };
+            socket.in(client[tags.CURR_ROOM]).emit('countUsers', obj);
+        }
         console.log('Socket disconnected ' + client[tags.SOCKET_ID]);
     });
 });
@@ -299,26 +704,28 @@ socket.on('connect', function(client) {
 
 // ****** Functions ******
 
-// Function to update user's and bot's arrays
-function modArr(room, obj, target) {
-    for(var i = 0;i < room[tags.LEFT_ARRAY].length; i++) {
-            if(room[tags.LEFT_ARRAY][i] == target) {
-                room[tags.LEFT_ARRAY].splice(i, 1);
-                break;
-        }
-    }
-    for(var i = 0;i < 5;i++) {
-        for(var j = 0;j < 5;j++) {
-            if(room[obj[tags.USERNAME]][tags.USER_TABLE][i][j] == target) {
-                room[obj[tags.USERNAME]][tags.ARR_USER][i][j] = 1;
-            }
-            if(room[obj[tags.USERNAME]][tags.BOT_TABLE][i][j] == target) {
-                room[obj[tags.USERNAME]][tags.ARR_BOT][i][j] = 1;
-            }
+// Function to update left arrays
+function modLeftArr(roomName, target) {
+    for(var i = 0;i < rooms[roomName][tags.LEFT_ARRAY].length; i++) {
+            if(rooms[roomName][tags.LEFT_ARRAY][i] == target) {
+                rooms[roomName][tags.LEFT_ARRAY].splice(i, 1);
+                return;
         }
     }
 }
 
+// Function to update user arrays
+function modUserArr(roomName, key, targetTable, refTable, target) {
+    for(var i = 0;i < 5;i++) {
+        for(var j = 0;j < 5;j++) {
+            if(rooms[roomName][key][refTable][i][j] == target) {
+                rooms[roomName][key][targetTable][i][j] = 1;
+                return;
+            }
+        }
+    }
+
+}
 // Function for bot's move
 function botMove(roomObj) {
     var randIndex = Math.floor(Math.random() * (roomObj[tags.LEFT_ARRAY].length));
@@ -381,5 +788,13 @@ function checkBingo(arr) {
         }
     }
     res += f;
+    res = min(res, 5);
     return res;
+}
+
+function min(num1, num2) {
+    if(num1 > num2) {
+        return num2;
+    }
+    return num1;
 }

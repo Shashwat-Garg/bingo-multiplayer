@@ -13,8 +13,8 @@
         <h1 class="titles">Welcome to Bingo !</h1>
         <input type="text" id="user-name" placeholder="Enter user name here...">
         <br><br>
-        <button onclick="confUser();">Submit</button>
-        <div id="username-rules">
+        <button id="submit-username" onclick="confUser();">Submit</button>
+        <div class="text">
             <p>Username <strong>must</strong> be as per below rules:</p>
             <ul id="rules-list">
                 <li>It should be at least 5 characters long.</li>
@@ -37,9 +37,25 @@
         <br><br>
         <button id="random-input-matrix" onclick="createRandomInput();">Create Random Matrix</button>
         <br><br>
-        <button onclick="confMatrix();">Confirm</button>
+        <button id="play-with-bot" onclick="confMatrix(playWithBot);">Play with bot</button>
+        <button id="host-game" onclick="confMatrix(gameLobby);">Host game</button>
+        <button id="join-game" onclick="confMatrix(gameLobby);">Join game</button>
     </div>
     <div id='page2'>
+        <h1 class="titles">Game Lobby</h1>
+        <br><br>
+        <div class="text">
+            <p>Current players:</p>
+            <ol id="players-list">
+            </ol>
+            <p id="game-status"></p>
+        </div>
+        <button id="share-room" onclick="copyText();">Share my room</button>
+        <button id="start-game" onclick="playGame();" disabled>Start Game</button>
+        <br>
+        <p class="text" id="copied-text"></p>
+    </div>
+    <div id='page3'>
         <h1 class="titles">Let's Play !</h1>
         <br><br>
         <div>
