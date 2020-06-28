@@ -30,12 +30,6 @@ const tags = {
     PLAYER_TURN: 'playerTurn'
 };
 
-// Importing requried modules
-const http = require('http');
-const io = require('socket.io');
-const validator = new (require('jsonschema').Validator)();
-const port = 3000;
-
 // Declaring required schemas
 const intSchema = {
     type: 'integer',
@@ -738,6 +732,7 @@ function botMove(roomObj) {
     var randIndex = Math.floor(Math.random() * (roomObj[tags.LEFT_ARRAY].length));
     var ele = roomObj[tags.LEFT_ARRAY][randIndex];
     roomObj[tags.LEFT_ARRAY].splice(randIndex, 1);
+}
 
 //Function to create random array
 function createRandom(a) {
