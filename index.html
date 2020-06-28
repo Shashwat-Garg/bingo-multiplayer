@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+<<<<<<< HEAD
 	<head>
 		<title>Let's Play Bingo!!!</title>
 		<link rel="stylesheet" href="styles.css" />
@@ -179,3 +180,80 @@
 		</div>
 	</body>
 </html>
+=======
+<head>
+    <title>Let's Play Bingo!!!</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
+    <script async src ="script.js" ></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body id="body" onload="checkCookie();" class="text">
+	<strong id="player-name"></strong>
+    <div id = "page0">
+        <h1 class="titles">Welcome to Bingo !</h1>
+        <input type="text" id="user-name" placeholder="Enter user name here...">
+        <br><br>
+        <input type="checkbox" id="rememberMe"><label for="rememberMe">Remember me</label>
+        <br><br>
+        <button id="submit-username" onclick="confUser();">Submit</button>
+        <div>
+            <p>Username <strong>must</strong> be as per below rules:</p>
+            <ul id="rules-list">
+                <li>It should be at least 5 characters long.</li>
+                <li>It should be at most 20 characters long.</li>
+                <li>It can contain english alphabets(Both cases acceptable).</li>
+                <li>It can contain numbers(0 - 9).</li>
+                <li>It can contain an underscore (_) character.</li>
+            </ul>
+        </div>
+    </div>
+    <div id="page1">
+        <h1 class="titles">Please Fill Your Bingo Matrix !</h1>
+        <br><br>
+        <div id="matrix-input-div">
+            <table id = "input-table" class="table1"></table>
+            <table id = "output-table" class="table2"></table>
+        </div>
+        <br><br>
+        <button id="reset-button" onclick="resetTable();">Reset Matrix</button>
+        <br><br>
+        <button id="random-input-matrix" onclick="createRandomInput();">Create Random Matrix</button>
+        <br><br>
+        <button id="play-with-bot" onclick="confMatrix(playWithBot);">Play with bot</button>
+        <button id="host-game" onclick="confMatrix(gameLobby);">Host game</button>
+        <button id="join-game" onclick="confMatrix(gameLobby);">Join game</button>
+    </div>
+    <div id='page2'>
+        <h1 class="titles">Game Lobby</h1>
+        <br><br>
+        <div>
+            <p>Current players:</p>
+            <ol id="players-list">
+            </ol>
+            <p id="game-status"></p>
+        </div>
+        <button id="share-room" onclick="copyText();">Share my room</button>
+        <button id="start-game" onclick="playGame();" disabled>Start Game</button>
+        <br>
+        <p id="copied-text"></p>
+    </div>
+    <div id='page3'>
+        <h1 class="titles">Let's Play !</h1>
+        <br><br>
+        <div>
+            <img src="images/B.png" alt="Letter B" id = "u1" class="bingo_letters" />
+            <img src="images/I.png" alt="Letter I" id = "u2" class="bingo_letters" />
+            <img src="images/N.png" alt="Letter N" id = "u3" class="bingo_letters" />
+            <img src="images/G.png" alt="Letter G" id = "u4" class="bingo_letters" />
+            <img src="images/O.png" alt="Letter O" id = "u5" class="bingo_letters" />
+        </div>
+        <br><br><br>
+        <table id = "gaming-table"></table>
+        <br><br>
+        <h1 id = "end-result"></h1>
+        <button id="replay" onclick="replay();" disabled>Replay</button>
+    </div>
+</body>
+</html>
+>>>>>>> dc61510... Code for 1-vs-1 implemented
