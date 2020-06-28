@@ -172,7 +172,11 @@ socket.on('connect', function(client) {
                     userTable: [],
                     botTable: [],
                     countUser: [0],
+<<<<<<< HEAD
                     countBot: [0]
+=======
+                    countBot: [0],
+>>>>>>> Code for 1-vs-1 implemented
                 };
                 // console.log(rooms);
                 var successObj = {
@@ -233,6 +237,10 @@ socket.on('connect', function(client) {
         var schema = {
             type: 'object',
             properties: {
+<<<<<<< HEAD
+=======
+                username: userNameSchema,
+>>>>>>> Code for 1-vs-1 implemented
                 addToRoom: userNameSchema,
                 element: intSchema
             },
@@ -522,7 +530,11 @@ socket.on('connect', function(client) {
                 client.emit('sendData', errorObj);
             }
             else {
+<<<<<<< HEAD
                 // console.log('player selected an element');
+=======
+                console.log('player selected an element');
+>>>>>>> Code for 1-vs-1 implemented
                 modLeftArr(obj[tags.ADD_TO_ROOM], obj[tags.ELEMENT]);
                 rooms[obj[tags.ADD_TO_ROOM]][tags.PLAYER_TURN]++;
                 asyncLoop(rooms[obj[tags.ADD_TO_ROOM]][tags.PLAYERS], function(key, next) {
@@ -629,7 +641,11 @@ socket.on('connect', function(client) {
                 // console.log(temp);
             }, 700);
         }
+<<<<<<< HEAD
         else if(obj[tags.USERNAME] in rooms) {
+=======
+        else if(obj[tags.USERNAME] in rooms){
+>>>>>>> Code for 1-vs-1 implemented
             // console.log('host selected element');
             modLeftArr(obj[tags.USERNAME], obj[tags.ELEMENT]);
             rooms[obj[tags.USERNAME]][tags.PLAYER_TURN]++;
@@ -666,6 +682,10 @@ socket.on('connect', function(client) {
             }, function(err) {
                 if(err) throw err;
             });
+<<<<<<< HEAD
+=======
+            // console.log('Before timeout',rooms[obj[tags.USERNAME]][obj[tags.USERNAME]]);
+>>>>>>> Code for 1-vs-1 implemented
         }
         else {
             var errorObj = {
@@ -686,7 +706,11 @@ socket.on('connect', function(client) {
             });
             delete rooms[client[tags.USERNAME]];
         }
+<<<<<<< HEAD
         else if(rooms[client[tags.CURR_ROOM]]) {
+=======
+        else if(rooms[client[tags.CURR_ROOM]]){
+>>>>>>> Code for 1-vs-1 implemented
             delete rooms[client[tags.USERNAME]];
             delete rooms[client[tags.CURR_ROOM]][client[tags.USERNAME]];
             var index = rooms[client[tags.CURR_ROOM]][tags.PLAYERS].indexOf(client[tags.USERNAME]);
@@ -704,6 +728,10 @@ socket.on('connect', function(client) {
 
 // ****** Functions ******
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> Code for 1-vs-1 implemented
 // Function to update left arrays
 function modLeftArr(roomName, target) {
     for(var i = 0;i < rooms[roomName][tags.LEFT_ARRAY].length; i++) {
@@ -797,4 +825,8 @@ function min(num1, num2) {
         return num2;
     }
     return num1;
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> Code for 1-vs-1 implemented

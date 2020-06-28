@@ -4,16 +4,16 @@
     "description": "",
     "main": "server-side.js",
     "dependencies": {
+        "async": "^3.2.0",
         "jsonschema": "^1.2.6",
-        "socket.io": "^2.3.0",
-        "async": "^3.2.0"
+        "socket.io": "^2.3.0"
     },
     "devDependencies": {},
     "scripts": {
         "start": "node server-side.js",
         "test": "node server-side.js"
-        },
-    "engines" : {
+    },
+    "engines": {
         "node": "10.x"
     },
     "author": "Sarthak Garg, Shashwat Garg"
