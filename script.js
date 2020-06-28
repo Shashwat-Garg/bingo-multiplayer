@@ -253,6 +253,7 @@ function checkCookie() {
     document.getElementById("submit-username").click();
   }
 }
+
 // Function to check if username is correctly entered
 function confUser() {
     userName = document.getElementById("user-name").value;
