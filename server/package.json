@@ -16,5 +16,18 @@
     "engines": {
         "node": "10.x"
     },
-    "author": "Sarthak Garg, Shashwat Garg"
+    "author": "Sarthak Garg, Shashwat Garg",
+    "name": "server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server-side.js",
+  "dependencies": {
+    "jsonschema": "^1.2.6",
+    "socket.io": "^2.3.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "node server-side.js"
+  },
+  "author": "Sarthak Garg, Shashwat Garg"
 }

@@ -30,6 +30,12 @@ const tags = {
     PLAYER_TURN: 'playerTurn'
 };
 
+// Importing requried modules
+const http = require('http');
+const io = require('socket.io');
+const validator = new (require('jsonschema').Validator)();
+const port = 3000;
+
 // Declaring required schemas
 const intSchema = {
     type: 'integer',
@@ -172,7 +178,7 @@ socket.on('connect', function(client) {
                     userTable: [],
                     botTable: [],
                     countUser: [0],
-                    countBot: [0],
+                    countBot: [0]
                 };
                 // console.log(rooms);
                 var successObj = {
@@ -233,7 +239,6 @@ socket.on('connect', function(client) {
         var schema = {
             type: 'object',
             properties: {
-                username: userNameSchema,
                 addToRoom: userNameSchema,
                 element: intSchema
             },
@@ -523,7 +528,7 @@ socket.on('connect', function(client) {
                 client.emit('sendData', errorObj);
             }
             else {
-                console.log('player selected an element');
+                // console.log('player selected an element');
                 modLeftArr(obj[tags.ADD_TO_ROOM], obj[tags.ELEMENT]);
                 rooms[obj[tags.ADD_TO_ROOM]][tags.PLAYER_TURN]++;
                 asyncLoop(rooms[obj[tags.ADD_TO_ROOM]][tags.PLAYERS], function(key, next) {
@@ -630,7 +635,7 @@ socket.on('connect', function(client) {
                 // console.log(temp);
             }, 700);
         }
-        else if(obj[tags.USERNAME] in rooms){
+        else if(obj[tags.USERNAME] in rooms) {
             // console.log('host selected element');
             modLeftArr(obj[tags.USERNAME], obj[tags.ELEMENT]);
             rooms[obj[tags.USERNAME]][tags.PLAYER_TURN]++;
@@ -667,7 +672,6 @@ socket.on('connect', function(client) {
             }, function(err) {
                 if(err) throw err;
             });
-            // console.log('Before timeout',rooms[obj[tags.USERNAME]][obj[tags.USERNAME]]);
         }
         else {
             var errorObj = {
@@ -688,7 +692,7 @@ socket.on('connect', function(client) {
             });
             delete rooms[client[tags.USERNAME]];
         }
-        else if(rooms[client[tags.CURR_ROOM]]){
+        else if(rooms[client[tags.CURR_ROOM]]) {
             delete rooms[client[tags.USERNAME]];
             delete rooms[client[tags.CURR_ROOM]][client[tags.USERNAME]];
             var index = rooms[client[tags.CURR_ROOM]][tags.PLAYERS].indexOf(client[tags.USERNAME]);
@@ -734,12 +738,6 @@ function botMove(roomObj) {
     var randIndex = Math.floor(Math.random() * (roomObj[tags.LEFT_ARRAY].length));
     var ele = roomObj[tags.LEFT_ARRAY][randIndex];
     roomObj[tags.LEFT_ARRAY].splice(randIndex, 1);
-    var target = "";
-    if(ele % 10 == ele)
-        target += "0";
-    target = target + ele;
-    return target;
-}
 
 //Function to create random array
 function createRandom(a) {

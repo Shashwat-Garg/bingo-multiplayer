@@ -2,6 +2,13 @@
     font-size: 3.2vw;
     width: 40vw;
 }
+#user-name{
+	font-size: 1.6vw;
+	width: 20vw;
+}
+.bingo-image{
+	height: 5vw;
+}
 .text {
     font-size: 3vw;
     text-align: center;
@@ -68,6 +75,13 @@
 #page0 {
     text-align: center;
     width: 100%;
+	text-align: center;
+	width: 100%;
+}
+#page1 {
+	text-align: center;
+	display: none;
+	width: 100%;
 }
 #page1, #page2, #page3 {
     text-align: center;
