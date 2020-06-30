@@ -133,6 +133,7 @@ socket.on('sendData', function(data) {
 // Listener to declare game has ended
 socket.on('gameHasEnded', function(data) {
     document.getElementById("replay").disabled = false;
+    document.getElementById("current-turn-block").style.display = "none";
     disableAll(gamingTable);
     console.log(data);
     if(data.draw) {
@@ -149,6 +150,11 @@ socket.on('gameHasEnded', function(data) {
 // Listener to declare game has started
 socket.on('gameHasStarted', function() {
     showProgress(false);
+    var turn = userName;
+    if(urlQuery()) {
+        turn = urlQuery();
+    }
+    document.getElementById("current-turn").innerHTML = " " + turn;
     document.getElementById("page2").style.display = "none";
     document.getElementById("page3").style.display = "inline-block";
     outputBasedInputTable(output);
@@ -240,6 +246,7 @@ function gameLobby() {
 // Function to make user play with bot
 function playWithBot() {
     showProgress(true);
+    document.getElementById("current-turn-block").style.display = "none";
     document.getElementById("page3").style.display = "inline-block";
     var obj = {
         username: userName
