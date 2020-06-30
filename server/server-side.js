@@ -761,26 +761,31 @@ socket.on('connect', function(client) {
         }
     });
     client.on('disconnect', function() {
-        if((client[tags.USERNAME] != null) && (client[tags.USERNAME] == client[tags.CURR_ROOM])) {
-            client.to(client[tags.USERNAME]).emit('hostDisconnected');
-            asyncLoop(rooms[client[tags.USERNAME]][tags.PLAYERS], function(key, next) {
-                delete rooms[client[tags.USERNAME]][key];
-                next();
-            }, function(err) {
-                if(err) throw err;
-            });
-            delete rooms[client[tags.USERNAME]];
-        }
-        else if(rooms[client[tags.CURR_ROOM]]) {
-            delete rooms[client[tags.USERNAME]];
-            delete rooms[client[tags.CURR_ROOM]][client[tags.USERNAME]];
-            var index = rooms[client[tags.CURR_ROOM]][tags.PLAYERS].indexOf(client[tags.USERNAME]);
-            if (index !== -1) rooms[client[tags.CURR_ROOM]][tags.PLAYERS].splice(index, 1);
-            var obj = {
-                count: rooms[client[tags.CURR_ROOM]][tags.PLAYERS].length,
-                players: rooms[client[tags.CURR_ROOM]][tags.PLAYERS]
-            };
-            socket.in(client[tags.CURR_ROOM]).emit('countUsers', obj);
+        if(tags.USERNAME in client) {
+            if(client[tags.USERNAME] == client[tags.CURR_ROOM]) {
+                client.to(client[tags.USERNAME]).emit('hostDisconnected');
+                asyncLoop(rooms[client[tags.USERNAME]][tags.PLAYERS], function(key, next) {
+                    delete rooms[key];
+                    next();
+                }, function(err) {
+                    if(err) throw err;
+                    delete rooms[client[tags.USERNAME]];
+                });
+            }
+            else if(rooms[client[tags.CURR_ROOM]]) {
+                delete rooms[client[tags.USERNAME]];
+                delete rooms[client[tags.CURR_ROOM]][client[tags.USERNAME]];
+                var index = rooms[client[tags.CURR_ROOM]][tags.PLAYERS].indexOf(client[tags.USERNAME]);
+                if (index !== -1) rooms[client[tags.CURR_ROOM]][tags.PLAYERS].splice(index, 1);
+                var obj = {
+                    count: rooms[client[tags.CURR_ROOM]][tags.PLAYERS].length,
+                    players: rooms[client[tags.CURR_ROOM]][tags.PLAYERS]
+                };
+                socket.in(client[tags.CURR_ROOM]).emit('countUsers', obj);
+            }
+            else if(client[tags.USERNAME] in rooms) {
+                delete rooms[client[tags.USERNAME]];
+            }
         }
         console.log('Socket disconnected ' + client[tags.SOCKET_ID]);
     });

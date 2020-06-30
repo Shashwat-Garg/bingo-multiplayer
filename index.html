@@ -7,7 +7,10 @@
     <script async src ="script.js" ></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
-<body id="body" onload="checkCookie();" class="text">
+<body onload="checkCookie();" class="text">
+    <div id="my-modal" class="modal">
+        <img id="load-gif" src="images/finger-tapping.gif">
+    </div>
 	<strong id="player-name"></strong>
     <div id = "page0">
         <h1 class="titles">Welcome to Bingo !</h1>
@@ -67,7 +70,9 @@
             <img src="images/G.png" alt="Letter G" id = "u4" class="bingo_letters" />
             <img src="images/O.png" alt="Letter O" id = "u5" class="bingo_letters" />
         </div>
-        <br><br><br>
+        <br><br>
+        <p id="current-turn-block">Current turn:<strong id="current-turn"></strong></p>
+        <br>
         <table id = "gaming-table"></table>
         <br><br>
         <h1 id = "end-result"></h1>

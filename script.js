@@ -58,6 +58,7 @@ socket.on('connect', function() {
         document.getElementById("join-game").style.display = "none";
     }
     socket.emit('userNameInput', JSobj, function(retObj) {
+    	showProgress(false);
         if(retObj.success) {
             document.getElementById("page0").style.display = "none";
             document.getElementById("page1").style.display = "inline-block";
@@ -114,6 +115,7 @@ socket.on('countUsers', function(data) {
 // Listener to get game status from server
 socket.on('sendData', function(data) {
     if(data.success) {
+    	document.getElementById("current-turn").innerHTML = " " + data.turn;
         if(data.turn == userName) {
             playerTurn = true;
         }
@@ -130,6 +132,7 @@ socket.on('sendData', function(data) {
 // Listener to declare game has ended
 socket.on('gameHasEnded', function(data) {
     document.getElementById("replay").disabled = false;
+    document.getElementById("current-turn-block").style.display = "none";
     disableAll(gamingTable);
     console.log(data);
     if(data.draw) {
@@ -145,12 +148,29 @@ socket.on('gameHasEnded', function(data) {
 
 // Listener to declare game has started
 socket.on('gameHasStarted', function() {
+    showProgress(false);
+    var turn = userName;
+    if(urlQuery()) {
+        turn = urlQuery();
+    }
+    document.getElementById("current-turn").innerHTML = " " + turn;
     document.getElementById("page2").style.display = "none";
     document.getElementById("page3").style.display = "inline-block";
     outputBasedInputTable(output);
 });
 
 // *****Functions******
+
+// Loading screen function
+function showProgress(truthValue) {
+    var modal = document.getElementById("my-modal");
+    if(truthValue) {
+        modal.style.display = "block";
+    }
+    else {
+        modal.style.display = "none";
+    }
+}
 
 // Function to get query from url
 function urlQuery() {
@@ -164,6 +184,7 @@ function playGame() {
         username: userName
     };
     playerTurn = true;
+    showProgress(true);
     socket.emit('hostStartedGame', obj);
 }
 
@@ -197,6 +218,7 @@ function outputBasedInputTable(knownTable) {
 
 // Function to direct user to game lobby
 function gameLobby() {
+	showProgress(true);
     document.getElementById("page2").style.display = "inline-block";
     if(urlQuery()) {
         document.getElementById("start-game").style.display = "none";
@@ -205,12 +227,14 @@ function gameLobby() {
             addToRoom: urlQuery()
         };
         socket.emit('addThisUserToRoom', JSobj, function(retObj) {
+		    showProgress(false);
             if(! retObj.success) {
                 alert(retObj.error);
             }
         });
     }
     else {
+    	showProgress(false);
         var obj = {
             username: userName
         };
@@ -220,12 +244,15 @@ function gameLobby() {
 
 // Function to make user play with bot
 function playWithBot() {
+    showProgress(true);
+    document.getElementById("current-turn-block").style.display = "none";
     document.getElementById("page3").style.display = "inline-block";
     var obj = {
         username: userName
     };
     playerTurn = true;
     socket.emit('createBotMatrix', obj, function(data) {
+	    showProgress(false);
         if(data.success) {
             socket.emit('hostStartedGame', obj);
         }
@@ -289,6 +316,7 @@ function checkCookie() {
 
 // Function to check if username is correctly entered
 function confUser() {
+    showProgress(true);
     userName = document.getElementById("user-name").value;
     var userNameREGX = /^[A-Za-z0-9_]+$/;
     if((!userNameREGX.test(userName)) || (userName.length < 5) || (userName.length > 20)) {
@@ -306,6 +334,7 @@ function confMatrix(callThisFunction) {
     if((row != 5) && (col != 5))
         alert("Please fill matrix completely !");
     else {
+    	showProgress(true);
         document.getElementById("page1").style.display = "none";
         var JSobj = {
             username: userName
@@ -317,6 +346,7 @@ function confMatrix(callThisFunction) {
             if(data.success) {
                 row = 0;
                 col = 0;
+		    	showProgress(false);
                 callThisFunction.call();
             }
             else {
@@ -420,6 +450,7 @@ function disableAll(table) {
 
 // Function to create random table
 function createRandomTable(table, clName) {
+	showProgress(true);
     var JSobj = {
         username: userName
     };
@@ -427,6 +458,7 @@ function createRandomTable(table, clName) {
         JSobj[tags.ADD_TO_ROOM] = urlQuery();
     }
     socket.emit('requestRandomMatrix', JSobj, function(data) {
+    	showProgress(false);
         if(data.success) {
             var a = Array.from(data.matrix);
             for(var i = 0;i < 25;i++) {
