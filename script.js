@@ -26,8 +26,9 @@ trigEnter.addEventListener("keyup", function(event) {
 });
 
 // ********** Creating Socket *****
-var socket = io.connect("wss://bingo-multiplayer.herokuapp.com");
-// var socket = io.connect("http://localhost:5000");
+
+var socket = io("wss://bingo-multiplayer.herokuapp.com", {forceNew: true, autoConnect: false});
+// var socket = io("http://localhost:5000", {forceNew: true, autoConnect: false});
 
 // ***** End of creating Socket *****
 
@@ -39,6 +40,40 @@ inputTable(output);
 
 // Creating gaming gnd bot's table
 var gamingTable = document.getElementById("gaming-table");
+
+socket.on('connect_error', function() {
+    alert('Server is down!\nClose this tab and please try after some time...');
+    socket.disconnect();
+    socket.removeAllListeners();
+});
+socket.on('connect', function() {
+    var JSobj = {
+        username: userName
+    };
+    if(urlQuery()) {
+        JSobj[tags.ADD_TO_ROOM] = urlQuery();
+        document.getElementById("play-with-bot").style.display = "none";
+        document.getElementById("host-game").style.display = "none";
+    }
+    else {
+        document.getElementById("join-game").style.display = "none";
+    }
+    socket.emit('userNameInput', JSobj, function(retObj) {
+    	showProgress(false);
+        if(retObj.success) {
+            document.getElementById("page0").style.display = "none";
+            document.getElementById("page1").style.display = "inline-block";
+            if(document.getElementById("rememberMe").checked) {
+                setCookie("username", userName, 7);
+            }
+            document.getElementById("player-name").style.display = "inline-block";
+            document.getElementById("player-name").innerHTML = userName;
+        }
+        else {
+            alert(retObj.error);
+        }
+    });
+});
 
 // If host disconnects, alert the client
 socket.on('hostDisconnected', function() {
@@ -81,6 +116,7 @@ socket.on('countUsers', function(data) {
 // Listener to get game status from server
 socket.on('sendData', function(data) {
     if(data.success) {
+    	document.getElementById("current-turn").innerHTML = " " + data.turn;
         if(data.turn == userName) {
             playerTurn = true;
         }
@@ -112,12 +148,24 @@ socket.on('gameHasEnded', function(data) {
 
 // Listener to declare game has started
 socket.on('gameHasStarted', function() {
+    showProgress(false);
     document.getElementById("page2").style.display = "none";
     document.getElementById("page3").style.display = "inline-block";
     outputBasedInputTable(output);
 });
 
 // *****Functions******
+
+// Loading screen function
+function showProgress(truthValue) {
+    var modal = document.getElementById("my-modal");
+    if(truthValue) {
+        modal.style.display = "block";
+    }
+    else {
+        modal.style.display = "none";
+    }
+}
 
 // Function to get query from url
 function urlQuery() {
@@ -131,6 +179,7 @@ function playGame() {
         username: userName
     };
     playerTurn = true;
+    showProgress(true);
     socket.emit('hostStartedGame', obj);
 }
 
@@ -164,6 +213,7 @@ function outputBasedInputTable(knownTable) {
 
 // Function to direct user to game lobby
 function gameLobby() {
+	showProgress(true);
     document.getElementById("page2").style.display = "inline-block";
     if(urlQuery()) {
         document.getElementById("start-game").style.display = "none";
@@ -172,12 +222,14 @@ function gameLobby() {
             addToRoom: urlQuery()
         };
         socket.emit('addThisUserToRoom', JSobj, function(retObj) {
+		    showProgress(false);
             if(! retObj.success) {
                 alert(retObj.error);
             }
         });
     }
     else {
+    	showProgress(false);
         var obj = {
             username: userName
         };
@@ -187,12 +239,14 @@ function gameLobby() {
 
 // Function to make user play with bot
 function playWithBot() {
+    showProgress(true);
     document.getElementById("page3").style.display = "inline-block";
     var obj = {
         username: userName
     };
     playerTurn = true;
     socket.emit('createBotMatrix', obj, function(data) {
+	    showProgress(false);
         if(data.success) {
             socket.emit('hostStartedGame', obj);
         }
@@ -256,32 +310,17 @@ function checkCookie() {
 
 // Function to check if username is correctly entered
 function confUser() {
+    showProgress(true);
     userName = document.getElementById("user-name").value;
-    var JSobj = {
-        username: userName
-    };
-    if(urlQuery()) {
-        JSobj[tags.ADD_TO_ROOM] = urlQuery();
-        document.getElementById("play-with-bot").style.display = "none";
-        document.getElementById("host-game").style.display = "none";
+    var userNameREGX = /^[A-Za-z0-9_]+$/;
+    if((!userNameREGX.test(userName)) || (userName.length < 5) || (userName.length > 20)) {
+        alert("Invalid username!");
+        document.getElementById("user-name").setCustomValidity("Invalid username!");
     }
     else {
-        document.getElementById("join-game").style.display = "none";
+        document.getElementById("user-name").setCustomValidity("");
+        socket.connect();
     }
-    socket.emit('userNameInput', JSobj, function(retObj) {
-        if(retObj.success) {
-            document.getElementById("page0").style.display = "none";
-            document.getElementById("page1").style.display = "inline-block";
-            if(document.getElementById("rememberMe").checked) {
-                setCookie("username", userName, 7);
-            }
-            document.getElementById("player-name").style.display = "inline-block";
-            document.getElementById("player-name").innerHTML = userName;
-        }
-        else {
-            alert(retObj.error);
-        }
-    });
 }
 
 // Function to check if matrix is filled completely
@@ -289,6 +328,7 @@ function confMatrix(callThisFunction) {
     if((row != 5) && (col != 5))
         alert("Please fill matrix completely !");
     else {
+    	showProgress(true);
         document.getElementById("page1").style.display = "none";
         var JSobj = {
             username: userName
@@ -300,6 +340,7 @@ function confMatrix(callThisFunction) {
             if(data.success) {
                 row = 0;
                 col = 0;
+		    	showProgress(false);
                 callThisFunction.call();
             }
             else {
@@ -403,6 +444,7 @@ function disableAll(table) {
 
 // Function to create random table
 function createRandomTable(table, clName) {
+	showProgress(true);
     var JSobj = {
         username: userName
     };
@@ -410,6 +452,7 @@ function createRandomTable(table, clName) {
         JSobj[tags.ADD_TO_ROOM] = urlQuery();
     }
     socket.emit('requestRandomMatrix', JSobj, function(data) {
+    	showProgress(false);
         if(data.success) {
             var a = Array.from(data.matrix);
             for(var i = 0;i < 25;i++) {
@@ -480,6 +523,11 @@ function createRandomInput() {
     row = 5;
     col = 5;
 }
+
+socket.on('disconnect', function() {
+    alert('Please refresh the page!');
+    socket.removeAllListeners();
+});
 
 function replay() {
     // window.location.reload(true);

@@ -1,29 +1,28 @@
-.loader {
-  border: 16px solid #f3f3f3;
-  border-radius: 50%;
-  border-top: 16px solid #3498db;
-  width: 120px;
-  height: 120px;
-  -webkit-animation: spin 2s linear infinite; /* Safari */
-  animation: spin 2s linear infinite;
+#load-gif {
+	margin-top: 23vh;
+	margin-bottom: 23vh;
+	width: 20vw;
 }
-
-/* Safari */
-@-webkit-keyframes spin {
-  0% { -webkit-transform: rotate(0deg); }
-  100% { -webkit-transform: rotate(360deg); }
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+/* The Modal (background) */
+.modal {
+	display: none; /* Hidden by default */
+	position: fixed; /* Stay in place */
+	z-index: 1; /* Sit on top */
+	padding-top: 100px; /* Location of the box */
+	left: 0;
+	top: 0;
+	width: 100%; /* Full width */
+	height: 100%; /* Full height */
+	overflow: auto; /* Enable scroll if needed */
+	background-color: rgb(0,0,0); /* Fallback color */
+	background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
 }
 #user-name {
     font-size: 3.2vw;
     width: 40vw;
 }
 .bingo-image{
-	height: 5vw;
+    height: 5vw;
 }
 .text {
     font-size: 3vw;
@@ -124,8 +123,8 @@
 
 #player-name {
     display: none;
-	border: 3px solid #73AD21;
-	padding: 0.5vw;
+    border: 3px solid #73AD21;
+    padding: 0.5vw;
 }
 
 @media only screen and (min-width: 900px) {
@@ -169,11 +168,7 @@
     .text {
         font-size: 1.6vw;
     }
-	#player-name {
-<<<<<<< HEAD
-=======
-		padding: 0.5vw;
->>>>>>> server-side.js implemented as backend for script.js
-		float: right;
-	}
+    #player-name {
+        float: right;
+    }
 }

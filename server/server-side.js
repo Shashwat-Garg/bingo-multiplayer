@@ -40,7 +40,7 @@ const userNameSchema = {
     type: 'string',
     minLength: 5,
     maxLength: 20,
-    pattern: /^[A-Za-z0-9_.]+$/
+    pattern: /^[A-Za-z0-9_]+$/
 };
 
 // Initializing required variables
@@ -61,6 +61,17 @@ var socket = io.listen(server);
 // Add a connect listener
 socket.on('connect', function(client) {
     console.log('Socket connected ' + client[tags.SOCKET_ID]);
+
+    // Disconnect stray sockets, i.e. sockets without a userName
+    function disconnectStray() {
+        if(!(tags.USERNAME in client)) {
+            console.log("Disconnecting stray socket");
+            if(client[tags.SOCKET_ID] in socket.sockets.connected) {
+                client.disconnect(true);
+            }
+        }
+    }
+    setTimeout(disconnectStray, 3 * 1000); // disconnect after 3 seconds of connection
 
     // Success! Now listen to messages to be recieved
     client.on('userNameInput', function(data, callback) {
@@ -136,6 +147,7 @@ socket.on('connect', function(client) {
                         callback(errorObj);
                     }
                     else {
+                        client[tags.USERNAME] = data[tags.USERNAME];
                         rooms[data[tags.USERNAME]] = {
                             id: client[tags.SOCKET_ID]
                         };
@@ -202,10 +214,20 @@ socket.on('connect', function(client) {
             };
             callback(errorObj);
         }
-        else if(data[tags.ADD_TO_ROOM]) {
+        else if((!(tags.USERNAME in client)) || (client[tags.USERNAME] != data[tags.USERNAME])) {
+            var errorObj = {
+                success: false,
+                error: 'Please refresh the web page!'
+            };
+            callback(errorObj);
+            console.log("Attempt to breach! Disconnecting socket " + client[tags.SOCKET_ID]);
+            if(client[tags.SOCKET_ID] in socket.sockets.connected) {
+                client.disconnect(true);
+            }
+        }
+        else if((data[tags.ADD_TO_ROOM]) && (data[tags.ADD_TO_ROOM] in rooms)) {
             rooms[data[tags.ADD_TO_ROOM]][tags.PLAYERS].push(data[tags.USERNAME]);
             client.join(data[tags.ADD_TO_ROOM]);
-            client[tags.USERNAME] = data[tags.USERNAME];
             client[tags.CURR_ROOM] = data[tags.ADD_TO_ROOM];
             // console.log(rooms);
             // console.log(rooms[data[tags.ADD_TO_ROOM]][data[tags.USERNAME]]);
@@ -245,7 +267,13 @@ socket.on('connect', function(client) {
                 client.disconnect(true);
             }
         }
-        else if(obj[tags.ADD_TO_ROOM]) {
+        else if((!(tags.USERNAME in client)) || (client[tags.USERNAME] != obj[tags.USERNAME])) {
+            console.log("Attempt to breach! Disconnecting socket " + client[tags.SOCKET_ID]);
+            if(client[tags.SOCKET_ID] in socket.sockets.connected) {
+                client.disconnect(true);
+            }
+        }
+        else if((obj[tags.ADD_TO_ROOM]) && (obj[tags.ADD_TO_ROOM] in rooms)) {
             rooms[obj[tags.ADD_TO_ROOM]][obj[tags.USERNAME]][tags.USER_TABLE].push(obj[tags.ELEMENT]);
         }
         else {
@@ -270,10 +298,16 @@ socket.on('connect', function(client) {
                 client.disconnect(true);
             }
         }
-        else if(obj[tags.ADD_TO_ROOM]) {
+        else if((!(tags.USERNAME in client)) || (client[tags.USERNAME] != obj[tags.USERNAME])) {
+            console.log("Attempt to breach! Disconnecting socket " + client[tags.SOCKET_ID]);
+            if(client[tags.SOCKET_ID] in socket.sockets.connected) {
+                client.disconnect(true);
+            }
+        }
+        else if((obj[tags.ADD_TO_ROOM]) && (obj[tags.ADD_TO_ROOM] in rooms)) {
             rooms[obj[tags.ADD_TO_ROOM]][obj[tags.USERNAME]][tags.USER_TABLE] = [];
         }
-        else {
+        else if(obj[tags.USERNAME] in rooms) {
             rooms[obj[tags.USERNAME]][obj[tags.USERNAME]][tags.USER_TABLE] = [];
             // console.log(rooms[obj[tags.USERNAME]][obj[tags.USERNAME]][tags.USER_TABLE]);
         }
@@ -295,7 +329,18 @@ socket.on('connect', function(client) {
                 client.disconnect(true);
             }
         }
-        else if(obj[tags.ADD_TO_ROOM]) {
+        else if((!(tags.USERNAME in client)) || (client[tags.USERNAME] != obj[tags.USERNAME])) {
+            var errorObj = {
+                success: false,
+                error: 'Please refresh the web page!'
+            };
+            callback(errorObj);
+            console.log("Attempt to breach! Disconnecting socket " + client[tags.SOCKET_ID]);
+            if(client[tags.SOCKET_ID] in socket.sockets.connected) {
+                client.disconnect(true);
+            }
+        }
+        else if((obj[tags.ADD_TO_ROOM]) && (obj[tags.ADD_TO_ROOM] in rooms)) {
             var a = new Array(25);
             for(var i = 0;i < 25; i++) {
                 a[i] = i + 1;
@@ -350,7 +395,18 @@ socket.on('connect', function(client) {
                 client.disconnect(true);
             }
         }
-        else if(obj[tags.ADD_TO_ROOM]) {
+        else if((!(tags.USERNAME in client)) || (client[tags.USERNAME] != obj[tags.USERNAME])) {
+            var errorObj = {
+                success: false,
+                error: 'Please refresh the web page!'
+            };
+            callback(errorObj);
+            console.log("Attempt to breach! Disconnecting socket " + client[tags.SOCKET_ID]);
+            if(client[tags.SOCKET_ID] in socket.sockets.connected) {
+                client.disconnect(true);
+            }
+        }
+        else if((obj[tags.ADD_TO_ROOM]) && (obj[tags.ADD_TO_ROOM] in rooms)) {
             var cnt = 0;
             var temp = rooms[obj[tags.ADD_TO_ROOM]][obj[tags.USERNAME]][tags.USER_TABLE];
             rooms[obj[tags.ADD_TO_ROOM]][obj[tags.USERNAME]][tags.USER_TABLE] = new Array(5);
@@ -409,6 +465,17 @@ socket.on('connect', function(client) {
                 client.disconnect(true);
             }
         }
+        else if((!(tags.USERNAME in client)) || (client[tags.USERNAME] != obj[tags.USERNAME])) {
+            var errorObj = {
+                success: false,
+                error: 'Please refresh the web page!'
+            };
+            callback(errorObj);
+            console.log("Attempt to breach! Disconnecting socket " + client[tags.SOCKET_ID]);
+            if(client[tags.SOCKET_ID] in socket.sockets.connected) {
+                client.disconnect(true);
+            }
+        }
         else if(obj[tags.USERNAME] in rooms) {
             rooms[obj[tags.USERNAME]][tags.GAME_STATUS] = status.GAME_STARTED;
             // console.log(rooms);
@@ -460,6 +527,12 @@ socket.on('connect', function(client) {
                 client.disconnect(true);
             }
         }
+        else if((!(tags.USERNAME in client)) || (client[tags.USERNAME] != data[tags.USERNAME])) {
+            console.log("Attempt to breach! Disconnecting socket " + client[tags.SOCKET_ID]);
+            if(client[tags.SOCKET_ID] in socket.sockets.connected) {
+                client.disconnect(true);
+            }
+        }
         else {
             rooms[data[tags.USERNAME]][tags.GAME_STATUS] = status.GAME_STARTED;
             rooms[data[tags.USERNAME]][tags.PLAYER_TURN] = 0;
@@ -477,6 +550,12 @@ socket.on('connect', function(client) {
             additionalProperties: false
         };
         if((!data) || (validator.validate(data, schema).errors.length > 0)) {
+            console.log("Attempt to breach! Disconnecting socket " + client[tags.SOCKET_ID]);
+            if(client[tags.SOCKET_ID] in socket.sockets.connected) {
+                client.disconnect(true);
+            }
+        }
+        else if((!(tags.USERNAME in client)) || (client[tags.USERNAME] != data[tags.USERNAME])) {
             console.log("Attempt to breach! Disconnecting socket " + client[tags.SOCKET_ID]);
             if(client[tags.SOCKET_ID] in socket.sockets.connected) {
                 client.disconnect(true);
@@ -513,7 +592,13 @@ socket.on('connect', function(client) {
                 client.disconnect(true);
             }
         }
-        else if(obj[tags.ADD_TO_ROOM]) {
+        else if((!(tags.USERNAME in client)) || (client[tags.USERNAME] != obj[tags.USERNAME])) {
+            console.log("Attempt to breach! Disconnecting socket " + client[tags.SOCKET_ID]);
+            if(client[tags.SOCKET_ID] in socket.sockets.connected) {
+                client.disconnect(true);
+            }
+        }
+        else if((obj[tags.ADD_TO_ROOM]) && (obj[tags.ADD_TO_ROOM] in rooms)) {
             if(rooms[obj[tags.ADD_TO_ROOM]][tags.LEFT_ARRAY].indexOf(obj[tags.ELEMENT]) < 0) {
                 var errorObj = {
                     success: false,
