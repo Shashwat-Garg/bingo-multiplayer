@@ -26,8 +26,8 @@ trigEnter.addEventListener("keyup", function(event) {
 });
 
 // ********** Creating Socket *****
-var socket = io.connect("wss://bingo-multiplayer.herokuapp.com");
-// var socket = io.connect("http://localhost:5000");
+var socket = io("wss://bingo-multiplayer.herokuapp.com", {forceNew: true, autoConnect: false});
+// var socket = io("http://localhost:5000", {forceNew: true, autoConnect: false});
 
 // ***** End of creating Socket *****
 
@@ -39,6 +39,39 @@ inputTable(output);
 
 // Creating gaming gnd bot's table
 var gamingTable = document.getElementById("gaming-table");
+
+socket.on('connect_error', function() {
+    alert('Server is down!\nClose this tab and please try after some time...');
+    socket.disconnect();
+    socket.removeAllListeners();
+});
+socket.on('connect', function() {
+    var JSobj = {
+        username: userName
+    };
+    if(urlQuery()) {
+        JSobj[tags.ADD_TO_ROOM] = urlQuery();
+        document.getElementById("play-with-bot").style.display = "none";
+        document.getElementById("host-game").style.display = "none";
+    }
+    else {
+        document.getElementById("join-game").style.display = "none";
+    }
+    socket.emit('userNameInput', JSobj, function(retObj) {
+        if(retObj.success) {
+            document.getElementById("page0").style.display = "none";
+            document.getElementById("page1").style.display = "inline-block";
+            if(document.getElementById("rememberMe").checked) {
+                setCookie("username", userName, 7);
+            }
+            document.getElementById("player-name").style.display = "inline-block";
+            document.getElementById("player-name").innerHTML = userName;
+        }
+        else {
+            alert(retObj.error);
+        }
+    });
+});
 
 // If host disconnects, alert the client
 socket.on('hostDisconnected', function() {
@@ -257,31 +290,15 @@ function checkCookie() {
 // Function to check if username is correctly entered
 function confUser() {
     userName = document.getElementById("user-name").value;
-    var JSobj = {
-        username: userName
-    };
-    if(urlQuery()) {
-        JSobj[tags.ADD_TO_ROOM] = urlQuery();
-        document.getElementById("play-with-bot").style.display = "none";
-        document.getElementById("host-game").style.display = "none";
+    var userNameREGX = /^[A-Za-z0-9_]+$/;
+    if((!userNameREGX.test(userName)) || (userName.length < 5) || (userName.length > 20)) {
+        alert("Invalid username!");
+        document.getElementById("user-name").setCustomValidity("Invalid username!");
     }
     else {
-        document.getElementById("join-game").style.display = "none";
+        document.getElementById("user-name").setCustomValidity("");
+        socket.connect();
     }
-    socket.emit('userNameInput', JSobj, function(retObj) {
-        if(retObj.success) {
-            document.getElementById("page0").style.display = "none";
-            document.getElementById("page1").style.display = "inline-block";
-            if(document.getElementById("rememberMe").checked) {
-                setCookie("username", userName, 7);
-            }
-            document.getElementById("player-name").style.display = "inline-block";
-            document.getElementById("player-name").innerHTML = userName;
-        }
-        else {
-            alert(retObj.error);
-        }
-    });
 }
 
 // Function to check if matrix is filled completely
@@ -480,6 +497,11 @@ function createRandomInput() {
     row = 5;
     col = 5;
 }
+
+socket.on('disconnect', function() {
+    alert('Please refresh the page!');
+    socket.removeAllListeners();
+});
 
 function replay() {
     // window.location.reload(true);
