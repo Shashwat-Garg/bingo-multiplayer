@@ -116,6 +116,7 @@ socket.on('countUsers', function(data) {
 // Listener to get game status from server
 socket.on('sendData', function(data) {
     if(data.success) {
+    	document.getElementById("current-turn").innerHTML = " " + data.turn;
         if(data.turn == userName) {
             playerTurn = true;
         }
