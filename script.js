@@ -589,7 +589,6 @@ function createRandomInput() {
 }
 
 socket.on('disconnect', function() {
-
     alert('Refreshing the web page!');
     socket.removeAllListeners();
     replay();
