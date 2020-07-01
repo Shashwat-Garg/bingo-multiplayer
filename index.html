@@ -7,11 +7,14 @@
     <script async src ="script.js" ></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
-<body id="body" onload="checkCookie();" class="text">
+<body onload="checkCookie();" class="text">
     <div id="my-modal" class="modal">
-        <img id="load-gif" src="images/finger-tapping.gif">
+        <img id="load-gif" src="images/loading.gif">
     </div>
 	<strong id="player-name"></strong>
+	<br id="small-screen">
+	<strong id="sound-status" onclick="soundStatus();">Sound: On</strong>
+	<br>
     <div id = "page0">
         <h1 class="titles">Welcome to Bingo !</h1>
         <input type="text" id="user-name" placeholder="Enter user name here..." maxlength="20">
@@ -61,6 +64,7 @@
         <p id="copied-text"></p>
     </div>
     <div id='page3'>
+        <audio id="cut-sound">Your Browser does not support this audio!<source src="sounds/cut_sound.wav"></audio>
         <h1 class="titles">Let's Play !</h1>
         <br><br>
         <div>
@@ -71,11 +75,12 @@
             <img src="images/O.png" alt="Letter O" id = "u5" class="bingo_letters" />
         </div>
         <br><br>
-        <p>Current turn:</p>
-        <strong id="current-turn"></strong>
+        <p id="current-turn-block">Current turn:<strong id="current-turn"></strong></p>
         <br>
         <table id = "gaming-table"></table>
         <br><br>
+        <audio id="winning-sound">Your Browser does not support this audio!<source src="sounds/winning_sound.wav"></audio>
+	    <audio id="losing-sound">Your Browser does not support this audio!<source src="sounds/losing_sound.wav"></audio>
         <h1 id = "end-result"></h1>
         <button id="replay" onclick="replay();" disabled>Replay</button>
     </div>
