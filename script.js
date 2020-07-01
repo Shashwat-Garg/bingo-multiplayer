@@ -571,7 +571,8 @@ function createRandomInput() {
 }
 
 socket.on('disconnect', function() {
-    alert('Please refresh the page!');
+    alert('Refreshing the web page!');
+    replay();
     socket.removeAllListeners();
 });
 
