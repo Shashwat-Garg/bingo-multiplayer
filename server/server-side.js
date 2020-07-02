@@ -250,8 +250,6 @@ socket.on('connect', function(client) {
             socket.in(data[tags.ADD_TO_ROOM]).emit('countUsers', obj);
         }
         else {
-            console.log('addThisUserToRoom');
-            console.log(data);
             var errorObj = {
                 success: false,
                 error: 'Username already exists!'
@@ -268,7 +266,7 @@ socket.on('connect', function(client) {
                 addToRoom: userNameSchema,
                 element: intSchema
             },
-            required: [tags.USERNAME,tags.ELEMENT],
+            required: [tags.USERNAME, tags.ELEMENT],
             additionalProperties: false
         };
         if((!obj) || (validator.validate(obj, schema).errors.length > 0)) {
