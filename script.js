@@ -15,6 +15,7 @@ var playerTurn = false;
 // Storing username
 var userName = document.getElementById("user-name").value;
 document.getElementById("user-name").value = "";
+document.getElementById("replay").disabled = true;
 
 // To trigger submit button by pressing enter
 var trigEnter = document.getElementById("user-name");
@@ -135,14 +136,19 @@ socket.on('gameHasEnded', function(data) {
     document.getElementById("replay").disabled = false;
     document.getElementById("current-turn-block").style.display = "none";
     disableAll(gamingTable);
-    console.log(data);
     if(data.draw) {
         document.getElementById("end-result").innerHTML = 'It was a draw!';
     }
     else if(data.winner == userName) {
+        document.getElementById("winning-sound").play();
+        document.getElementById("win-gif").style.display = "inline-block";
+        setTimeout(function() {
+            document.getElementById("win-gif").style.display = "none";
+        }, 6000);
         document.getElementById("end-result").innerHTML = 'You won!';
     }
     else {
+        document.getElementById("losing-sound").play();
         document.getElementById("end-result").innerHTML = data.winner + ' won :(';
     }
 });
@@ -160,8 +166,41 @@ socket.on('gameHasStarted', function() {
     outputBasedInputTable(output);
 });
 
+document.getElementsByClassName("close")[0].onclick = function() {
+    document.getElementById("game-info").style.display = "none";
+}
+window.onclick = function(event) {
+    var modal = document.getElementById("game-info");
+    if(event.target == modal)
+    modal.style.display = "none";
+}
 // *****Functions******
 
+// Function to show info about game
+function gameInfo() {
+    document.getElementById("game-info").style.display = "block";
+}
+
+// Function to mute or unmute sounds
+function soundStatus() {
+    var sound = document.getElementById("sound-status");
+    if(sound.innerHTML == "Sound: On") {
+        setCookie("audio", "off", 7);
+        document.getElementById("sound-status").style.borderColor = "red";
+        document.getElementById("winning-sound").muted = true;
+        document.getElementById("losing-sound").muted = true;
+        document.getElementById("cut-sound").muted = true;
+        sound.innerHTML = "Sound: Off";
+    }
+    else {
+        setCookie("audio", "on", 7);
+        document.getElementById("sound-status").style.borderColor = "green";
+        document.getElementById("winning-sound").muted = false;
+        document.getElementById("losing-sound").muted = false;
+        document.getElementById("cut-sound").muted = false;
+        sound.innerHTML = "Sound: On";
+    }
+}
 // Loading screen function
 function showProgress(truthValue) {
     var modal = document.getElementById("my-modal");
@@ -308,10 +347,27 @@ function getCookie(cname) {
 
 function checkCookie() {
   var user = getCookie("username");
-  console.log(user);
+  var audio = getCookie("audio");
   if (user != "NA") {
     document.getElementById("user-name").value = user;
     document.getElementById("submit-username").click();
+  }
+  if(audio == "on") {
+    document.getElementById("sound-status").innerHTML = "Sound: Off";
+    soundStatus();
+  }
+  else if(audio == "off") {
+    document.getElementById("sound-status").innerHTML = "Sound: On";
+    soundStatus();
+  }
+  else {
+    var aud = document.getElementById("sound-status").innerHTML;
+    if(aud == "Sound: On") {
+        setCookie("audio", "on", 7);
+    }
+    else {
+        setCookie("audio", "off", 7);
+    }
   }
 }
 
@@ -436,6 +492,7 @@ function bingoTicks(cnt) {
         if(obj.src.substring(obj.src.length - 8,obj.src.length) == "-CUT.png") {
             continue;
         }
+        document.getElementById("cut-sound").play();
         document.getElementById('u'+i).src  = obj.src.substring(0,obj.src.length - 4)+"-CUT.png";
     }
 }
@@ -532,8 +589,9 @@ function createRandomInput() {
 }
 
 socket.on('disconnect', function() {
-    alert('Please refresh the page!');
+    alert('Refreshing the web page!');
     socket.removeAllListeners();
+    replay();
 });
 
 function replay() {
