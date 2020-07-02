@@ -325,7 +325,7 @@ function setCookie(cname, cvalue, exdays) {
   var d = new Date();
   d.setTime(d.getTime() + (exdays*24*60*60*1000));
   var expires = "expires=" + d.toGMTString();
-  document.cookie = cname + "=" + cvalue + ";" + expires + ";Secure=true;SameSite=Strict;path=/";
+  document.cookie = cname + "=" + cvalue + ";" + expires + ";Secure;SameSite=Strict;path=/bingo-multiplayer";
 }
 
 function getCookie(cname) {
