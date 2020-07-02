@@ -98,7 +98,7 @@ socket.on('connect', function(client) {
             };
             callback(errorObj);
         }
-        else if(data[tags.USERNAME] == data[tags.ADD_TO_ROOM]) {
+        else if((data[tags.USERNAME] == data[tags.ADD_TO_ROOM]) && (rooms[data[tags.ADD_TO_ROOM]])){
             var errorObj = {
                 success: false,
                 error: 'Room already exists!'
@@ -171,6 +171,13 @@ socket.on('connect', function(client) {
                     callback(errorObj);
                 }
             }
+            else if(data[tags.ADD_TO_ROOM]) {
+                var errorObj = {
+                    success: false,
+                    error: 'Room doesn\'t exists!'
+                };
+                callback(errorObj);
+            }
             else {
                 rooms[data[tags.USERNAME]] = {
                     leftArray: leftArray,
@@ -217,7 +224,7 @@ socket.on('connect', function(client) {
         else if((!(tags.USERNAME in client)) || (client[tags.USERNAME] != data[tags.USERNAME])) {
             var errorObj = {
                 success: false,
-                error: 'Please refresh the web page!'
+                error: 'Refreshing the web page...'
             };
             callback(errorObj);
             console.log("Attempt to breach! Disconnecting socket " + client[tags.SOCKET_ID]);
@@ -243,6 +250,8 @@ socket.on('connect', function(client) {
             socket.in(data[tags.ADD_TO_ROOM]).emit('countUsers', obj);
         }
         else {
+            console.log('addThisUserToRoom');
+            console.log(data);
             var errorObj = {
                 success: false,
                 error: 'Username already exists!'
@@ -255,6 +264,7 @@ socket.on('connect', function(client) {
         var schema = {
             type: 'object',
             properties: {
+                username: userNameSchema,
                 addToRoom: userNameSchema,
                 element: intSchema
             },
@@ -332,7 +342,7 @@ socket.on('connect', function(client) {
         else if((!(tags.USERNAME in client)) || (client[tags.USERNAME] != obj[tags.USERNAME])) {
             var errorObj = {
                 success: false,
-                error: 'Please refresh the web page!'
+                error: 'Refreshing the web page...'
             };
             callback(errorObj);
             console.log("Attempt to breach! Disconnecting socket " + client[tags.SOCKET_ID]);
@@ -398,7 +408,7 @@ socket.on('connect', function(client) {
         else if((!(tags.USERNAME in client)) || (client[tags.USERNAME] != obj[tags.USERNAME])) {
             var errorObj = {
                 success: false,
-                error: 'Please refresh the web page!'
+                error: 'Refreshing the web page...'
             };
             callback(errorObj);
             console.log("Attempt to breach! Disconnecting socket " + client[tags.SOCKET_ID]);
@@ -468,7 +478,7 @@ socket.on('connect', function(client) {
         else if((!(tags.USERNAME in client)) || (client[tags.USERNAME] != obj[tags.USERNAME])) {
             var errorObj = {
                 success: false,
-                error: 'Please refresh the web page!'
+                error: 'Refreshing the web page...'
             };
             callback(errorObj);
             console.log("Attempt to breach! Disconnecting socket " + client[tags.SOCKET_ID]);
