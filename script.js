@@ -378,6 +378,7 @@ function confUser() {
     if((!userNameREGX.test(userName)) || (userName.length < 5) || (userName.length > 20)) {
         alert("Invalid username!");
         document.getElementById("user-name").setCustomValidity("Invalid username!");
+        showProgress(false);
     }
     else {
         document.getElementById("user-name").setCustomValidity("");
