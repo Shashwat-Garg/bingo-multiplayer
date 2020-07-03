@@ -59,7 +59,7 @@ socket.on('connect', function() {
         document.getElementById("join-game").style.display = "none";
     }
     socket.emit('userNameInput', JSobj, function(retObj) {
-    	showProgress(false);
+        showProgress(false);
         if(retObj.success) {
             document.getElementById("page0").style.display = "none";
             document.getElementById("page1").style.display = "inline-block";
@@ -116,7 +116,7 @@ socket.on('countUsers', function(data) {
 // Listener to get game status from server
 socket.on('sendData', function(data) {
     if(data.success) {
-    	document.getElementById("current-turn").innerHTML = " " + data.turn;
+        document.getElementById("current-turn").innerHTML = " " + data.turn;
         if(data.turn == userName) {
             playerTurn = true;
         }
@@ -257,7 +257,7 @@ function outputBasedInputTable(knownTable) {
 
 // Function to direct user to game lobby
 function gameLobby() {
-	showProgress(true);
+    showProgress(true);
     document.getElementById("page2").style.display = "inline-block";
     if(urlQuery()) {
         document.getElementById("start-game").style.display = "none";
@@ -266,14 +266,14 @@ function gameLobby() {
             addToRoom: urlQuery()
         };
         socket.emit('addThisUserToRoom', JSobj, function(retObj) {
-		    showProgress(false);
+            showProgress(false);
             if(! retObj.success) {
                 alert(retObj.error);
             }
         });
     }
     else {
-    	showProgress(false);
+        showProgress(false);
         var obj = {
             username: userName
         };
@@ -291,7 +291,7 @@ function playWithBot() {
     };
     playerTurn = true;
     socket.emit('createBotMatrix', obj, function(data) {
-	    showProgress(false);
+        showProgress(false);
         if(data.success) {
             socket.emit('hostStartedGame', obj);
         }
@@ -322,52 +322,52 @@ function copyText() {
 }
 
 function setCookie(cname, cvalue, exdays) {
-  var d = new Date();
-  d.setTime(d.getTime() + (exdays*24*60*60*1000));
-  var expires = "expires=" + d.toGMTString();
-  document.cookie = cname + "=" + cvalue + ";" + expires + ";Secure;SameSite=Strict;path=/bingo-multiplayer";
+    var d = new Date();
+    d.setTime(d.getTime() + (exdays*24*60*60*1000));
+    var expires = "expires=" + d.toGMTString();
+    document.cookie = cname + "=" + cvalue + ";" + expires + ";Secure;SameSite=Strict;path=/bingo-multiplayer";
 }
 
 function getCookie(cname) {
-  var name = cname + "=";
-  var decodedCookie = decodeURIComponent(document.cookie);
-  var ca = decodedCookie.split(';');
-  for(var i = 0; i < ca.length; i++) {
-    var c = ca[i];
-    while (c.charAt(0) == ' ') {
-      c = c.substring(1);
+    var name = cname + "=";
+    var decodedCookie = decodeURIComponent(document.cookie);
+    var ca = decodedCookie.split(';');
+    for(var i = 0; i < ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+        }
     }
-    if (c.indexOf(name) == 0) {
-      return c.substring(name.length, c.length);
-    }
-  }
-  return "NA";
+    return "NA";
 }
 
 function checkCookie() {
-  var user = getCookie("username");
-  var audio = getCookie("audio");
-  if (user != "NA") {
-    document.getElementById("user-name").value = user;
-    document.getElementById("submit-username").click();
-  }
-  if(audio == "on") {
-    document.getElementById("sound-status").innerHTML = "Sound: Off";
-    soundStatus();
-  }
-  else if(audio == "off") {
-    document.getElementById("sound-status").innerHTML = "Sound: On";
-    soundStatus();
-  }
-  else {
-    var aud = document.getElementById("sound-status").innerHTML;
-    if(aud == "Sound: On") {
-        setCookie("audio", "on", 7);
+    var user = getCookie("username");
+    var audio = getCookie("audio");
+    if (user != "NA") {
+        document.getElementById("user-name").value = user;
+        document.getElementById("submit-username").click();
+    }
+    if(audio == "on") {
+        document.getElementById("sound-status").innerHTML = "Sound: Off";
+        soundStatus();
+    }
+    else if(audio == "off") {
+        document.getElementById("sound-status").innerHTML = "Sound: On";
+        soundStatus();
     }
     else {
-        setCookie("audio", "off", 7);
+        var aud = document.getElementById("sound-status").innerHTML;
+        if(aud == "Sound: On") {
+            setCookie("audio", "on", 7);
+        }
+        else {
+            setCookie("audio", "off", 7);
+        }
     }
-  }
 }
 
 // Function to check if username is correctly entered
@@ -390,7 +390,7 @@ function confMatrix(callThisFunction) {
     if((row != 5) && (col != 5))
         alert("Please fill matrix completely !");
     else {
-    	showProgress(true);
+        showProgress(true);
         document.getElementById("page1").style.display = "none";
         var JSobj = {
             username: userName
@@ -402,7 +402,7 @@ function confMatrix(callThisFunction) {
             if(data.success) {
                 row = 0;
                 col = 0;
-		    	showProgress(false);
+                showProgress(false);
                 callThisFunction.call();
             }
             else {
@@ -507,7 +507,7 @@ function disableAll(table) {
 
 // Function to create random table
 function createRandomTable(table, clName) {
-	showProgress(true);
+    showProgress(true);
     var JSobj = {
         username: userName
     };
@@ -515,7 +515,7 @@ function createRandomTable(table, clName) {
         JSobj[tags.ADD_TO_ROOM] = urlQuery();
     }
     socket.emit('requestRandomMatrix', JSobj, function(data) {
-    	showProgress(false);
+        showProgress(false);
         if(data.success) {
             var a = Array.from(data.matrix);
             for(var i = 0;i < 25;i++) {

@@ -24,11 +24,13 @@
         </div>
     </div>
     <img id="info" src="images/game_info.png" onclick="gameInfo();">
-    <br id="small-screen">
-	<strong id="player-name"></strong>
-	<br id="small-screen">
-	<strong id="sound-status" onclick="soundStatus();">Sound: On</strong>
-	<br>
+    <br class="small-screen">
+    <br class="small-screen">
+    <strong id="player-name"></strong>
+    <br class="small-screen">
+    <br class="small-screen">
+    <strong id="sound-status" onclick="soundStatus();">Sound: On</strong>
+    <br>
     <div id = "page0">
         <h1 class="titles">Welcome to Bingo !</h1>
         <input type="text" id="user-name" placeholder="Enter user name here..." maxlength="20">
@@ -95,7 +97,7 @@
         <table id = "gaming-table"></table>
         <br><br>
         <audio id="winning-sound">Your Browser does not support this audio!<source src="sounds/winning_sound.wav"></audio>
-	    <audio id="losing-sound">Your Browser does not support this audio!<source src="sounds/losing_sound.wav"></audio>
+        <audio id="losing-sound">Your Browser does not support this audio!<source src="sounds/losing_sound.wav"></audio>
         <h1 id = "end-result"></h1>
         <button id="replay" onclick="replay();">Replay</button>
     </div>
