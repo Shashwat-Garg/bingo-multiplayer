@@ -46,6 +46,7 @@ inputTable(output);
 var gamingTable = document.getElementById("gaming-table");
 
 socket.on("connect_error", function () {
+	document.getElementById("alert-sound").play();
 	alert("Server is down!\nClose this tab and please try after some time...");
 	socket.disconnect();
 	socket.removeAllListeners();
@@ -73,6 +74,7 @@ socket.on("connect", function () {
 				"inline-block";
 			document.getElementById("player-name").innerHTML = userName;
 		} else {
+			document.getElementById("alert-sound").play();
 			alert(retObj.error);
 		}
 	});
@@ -80,6 +82,7 @@ socket.on("connect", function () {
 
 // If host disconnects, alert the client
 socket.on("hostDisconnected", function () {
+	document.getElementById("alert-sound").play();
 	alert("Host has disconnected! Redirecting to home page...");
 	window.location.href = window.location.pathname;
 });
@@ -129,6 +132,7 @@ socket.on("sendData", function (data) {
 			bingoTicks(data[tags.COUNT_USER]);
 		}
 	} else {
+		document.getElementById("alert-sound").play();
 		alert(data.error);
 	}
 });
@@ -139,6 +143,7 @@ socket.on("gameHasEnded", function (data) {
 	document.getElementById("current-turn-block").style.display = "none";
 	disableAll(gamingTable);
 	if (data.draw) {
+		document.getElementById("losing-sound").play();
 		document.getElementById("end-result").innerHTML = "It was a draw!";
 	} else if (data.winner == userName) {
 		document.getElementById("winning-sound").play();
@@ -187,16 +192,16 @@ function soundStatus() {
 	if (sound.innerHTML == "Sound: On") {
 		setCookie("audio", "off", 7);
 		document.getElementById("sound-status").style.borderColor = "red";
-		document.getElementById("winning-sound").muted = true;
-		document.getElementById("losing-sound").muted = true;
-		document.getElementById("cut-sound").muted = true;
+		for (i = 0; i < document.getElementsByClassName("audios").length; i++) {
+			document.getElementsByClassName("audios")[i].muted = true;
+		}
 		sound.innerHTML = "Sound: Off";
 	} else {
 		setCookie("audio", "on", 7);
 		document.getElementById("sound-status").style.borderColor = "green";
-		document.getElementById("winning-sound").muted = false;
-		document.getElementById("losing-sound").muted = false;
-		document.getElementById("cut-sound").muted = false;
+		for (i = 0; i < document.getElementsByClassName("audios").length; i++) {
+			document.getElementsByClassName("audios")[i].muted = false;
+		}
 		sound.innerHTML = "Sound: On";
 	}
 }
@@ -267,6 +272,7 @@ function gameLobby() {
 		socket.emit("addThisUserToRoom", JSobj, function (retObj) {
 			showProgress(false);
 			if (!retObj.success) {
+				document.getElementById("alert-sound").play();
 				alert(retObj.error);
 			}
 		});
@@ -293,6 +299,7 @@ function playWithBot() {
 		if (data.success) {
 			socket.emit("hostStartedGame", obj);
 		} else {
+			document.getElementById("alert-sound").play();
 			alert(data.error);
 		}
 	});
@@ -379,6 +386,7 @@ function confUser() {
 		userName.length < 5 ||
 		userName.length > 20
 	) {
+		document.getElementById("alert-sound").play();
 		alert("Invalid username!");
 		document
 			.getElementById("user-name")
@@ -392,8 +400,10 @@ function confUser() {
 
 // Function to check if matrix is filled completely
 function confMatrix(callThisFunction) {
-	if (row != 5 && col != 5) alert("Please fill matrix completely !");
-	else {
+	if (row != 5 && col != 5) {
+		document.getElementById("alert-sound").play();
+		alert("Please fill matrix completely !");
+	} else {
 		showProgress(true);
 		document.getElementById("page1").style.display = "none";
 		var JSobj = {
@@ -409,6 +419,7 @@ function confMatrix(callThisFunction) {
 				showProgress(false);
 				callThisFunction.call();
 			} else {
+				document.getElementById("alert-sound").play();
 				alert(data.error);
 			}
 		});
@@ -542,6 +553,7 @@ function createRandomTable(table, clName) {
 				}
 			}
 		} else {
+			document.getElementById("alert-sound").play();
 			alert(data.error);
 		}
 	});
@@ -588,6 +600,7 @@ function createRandomInput() {
 }
 
 socket.on("disconnect", function () {
+	document.getElementById("alert-sound").play();
 	alert("Refreshing the web page!");
 	socket.removeAllListeners();
 	replay();
