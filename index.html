@@ -1,105 +1,179 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <title>Let's Play Bingo!!!</title>
-    <link rel="stylesheet" href="styles.css" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
-    <script async src ="script.js" ></script>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-</head>
-<body onload="checkCookie();" class="text">
-    <div id="my-modal" class="modal">
-        <img id="load-gif" src="images/loading.gif">
-    </div>
-    <div id="game-info" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2>About BINGO game</h2>
-            <ul id="rules-list">
-                <li>The game rules are staright-forward. You need to make a 5x5 matrix containg numbers between 1 ans 25. Same is done by your opponent.</li>
-                <li>Then game starts. Each player, in their respective turns, chooses a number from their respective matrices and marks it as crossed.</li>
-                <li>Once a row/column/diagonal of any player is completed, a letter from the word BINGO of that player is cut.</li>
-                <li>The player with all the letters of BINGO cut first is the winner. If both the players cut all the letters simultaniously, it is a draw.</li>
-            </ul>
-        </div>
-    </div>
-    <img id="info" src="images/game_info.png" onclick="gameInfo();">
-    <br class="small-screen">
-    <br class="small-screen">
-    <strong id="player-name"></strong>
-    <br class="small-screen">
-    <br class="small-screen">
-    <strong id="sound-status" onclick="soundStatus();">Sound: On</strong>
-    <br>
-    <div id = "page0">
-        <h1 class="titles">Welcome to Bingo !</h1>
-        <input type="text" id="user-name" placeholder="Enter user name here..." maxlength="20">
-        <br><br>
-        <input type="checkbox" id="rememberMe"><label for="rememberMe">Remember me</label>
-        <br><br>
-        <button id="submit-username" onclick="confUser();">Submit</button>
-        <div>
-            <p>Username <strong>must</strong> be as per below rules:</p>
-            <ul id="rules-list">
-                <li>It should be at least 5 characters long.</li>
-                <li>It should be at most 20 characters long.</li>
-                <li>It can contain english alphabets(Both cases acceptable).</li>
-                <li>It can contain numbers(0 - 9).</li>
-                <li>It can contain an underscore (_) character.</li>
-            </ul>
-        </div>
-    </div>
-    <div id="page1">
-        <h1 class="titles">Please Fill Your Bingo Matrix !</h1>
-        <br><br>
-        <div id="matrix-input-div">
-            <table id = "input-table" class="table1"></table>
-            <table id = "output-table" class="table2"></table>
-        </div>
-        <br><br>
-        <button id="reset-button" onclick="resetTable();">Reset Matrix</button>
-        <br><br>
-        <button id="random-input-matrix" onclick="createRandomInput();">Create Random Matrix</button>
-        <br><br>
-        <button id="play-with-bot" onclick="confMatrix(playWithBot);">Play with bot</button>
-        <button id="host-game" onclick="confMatrix(gameLobby);">Host game</button>
-        <button id="join-game" onclick="confMatrix(gameLobby);">Join game</button>
-    </div>
-    <div id='page2'>
-        <h1 class="titles">Game Lobby</h1>
-        <br><br>
-        <div>
-            <p>Current players:</p>
-            <ol id="players-list">
-            </ol>
-            <p id="game-status"></p>
-        </div>
-        <button id="share-room" onclick="copyText();">Share my room</button>
-        <button id="start-game" onclick="playGame();" disabled>Start Game</button>
-        <br>
-        <p id="copied-text"></p>
-    </div>
-    <div id='page3'>
-        <img id="win-gif" src="images/win-animation.gif">
-        <audio id="cut-sound">Your Browser does not support this audio!<source src="sounds/cut_sound.wav"></audio>
-        <h1 class="titles">Let's Play !</h1>
-        <br><br>
-        <div>
-            <img src="images/B.png" alt="Letter B" id = "u1" class="bingo_letters" />
-            <img src="images/I.png" alt="Letter I" id = "u2" class="bingo_letters" />
-            <img src="images/N.png" alt="Letter N" id = "u3" class="bingo_letters" />
-            <img src="images/G.png" alt="Letter G" id = "u4" class="bingo_letters" />
-            <img src="images/O.png" alt="Letter O" id = "u5" class="bingo_letters" />
-        </div>
-        <br><br>
-        <p id="current-turn-block">Current turn:<strong id="current-turn"></strong></p>
-        <br>
-        <table id = "gaming-table"></table>
-        <br><br>
-        <audio id="winning-sound">Your Browser does not support this audio!<source src="sounds/winning_sound.wav"></audio>
-        <audio id="losing-sound">Your Browser does not support this audio!<source src="sounds/losing_sound.wav"></audio>
-        <h1 id = "end-result"></h1>
-        <button id="replay" onclick="replay();">Replay</button>
-    </div>
-</body>
+	<head>
+		<title>Let's Play Bingo!!!</title>
+		<link rel="stylesheet" href="styles.css" />
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
+		<script async src="script.js"></script>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	</head>
+	<body onload="checkCookie();" class="text">
+		<div id="my-modal" class="modal">
+			<img id="load-gif" src="images/loading.gif" />
+		</div>
+		<div id="game-info" class="modal">
+			<div class="modal-content">
+				<span class="close">&times;</span>
+				<h2>About BINGO game</h2>
+				<ul id="rules-list">
+					<li>
+						The game rules are staright-forward. You need to make a
+						5x5 matrix containg numbers between 1 ans 25. Same is
+						done by your opponent.
+					</li>
+					<li>
+						Then game starts. Each player, in their respective
+						turns, chooses a number from their respective matrices
+						and marks it as crossed.
+					</li>
+					<li>
+						Once a row/column/diagonal of any player is completed, a
+						letter from the word BINGO of that player is cut.
+					</li>
+					<li>
+						The player with all the letters of BINGO cut first is
+						the winner. If both the players cut all the letters
+						simultaniously, it is a draw.
+					</li>
+				</ul>
+			</div>
+		</div>
+		<audio id="alert-sound" class="audios">
+			<source src="./sounds/WINDOWS XP ERROR SOUND.mp3" />
+		</audio>
+		<audio id="winning-sound" class="audios">
+			Your Browser does not support this audio!
+			<source src="sounds/gta_mission_complete.mp3" />
+		</audio>
+		<audio id="losing-sound" class="audios">
+			Your Browser does not support this audio!
+			<source src="sounds/coffin_dance.mp3" />
+		</audio>
+		<audio id="cut-sound" class="audios">
+			Your Browser does not support this audio!
+			<source src="sounds/cut_sound.wav" />
+		</audio>
+		<img id="info" src="images/game_info.png" onclick="gameInfo();" />
+		<br class="small-screen" />
+		<br class="small-screen" />
+		<strong id="player-name"></strong>
+		<br class="small-screen" />
+		<br class="small-screen" />
+		<strong id="sound-status" onclick="soundStatus();">Sound: On</strong>
+		<br />
+		<div id="page0">
+			<h1 class="titles">Welcome to Bingo !</h1>
+			<input
+				type="text"
+				id="user-name"
+				placeholder="Enter user name here..."
+				maxlength="20"
+			/>
+			<br /><br />
+			<input type="checkbox" id="rememberMe" /><label for="rememberMe"
+				>Remember me</label
+			>
+			<br /><br />
+			<button id="submit-username" onclick="confUser();">Submit</button>
+			<div>
+				<p>Username <strong>must</strong> be as per below rules:</p>
+				<ul id="rules-list">
+					<li>It should be at least 5 characters long.</li>
+					<li>It should be at most 20 characters long.</li>
+					<li>
+						It can contain english alphabets(Both cases acceptable).
+					</li>
+					<li>It can contain numbers(0 - 9).</li>
+					<li>It can contain an underscore (_) character.</li>
+				</ul>
+			</div>
+		</div>
+		<div id="page1">
+			<h1 class="titles">Please Fill Your Bingo Matrix !</h1>
+			<br /><br />
+			<div id="matrix-input-div">
+				<table id="input-table" class="table1"></table>
+				<table id="output-table" class="table2"></table>
+			</div>
+			<br /><br />
+			<button id="reset-button" onclick="resetTable();">
+				Reset Matrix
+			</button>
+			<br /><br />
+			<button id="random-input-matrix" onclick="createRandomInput();">
+				Create Random Matrix
+			</button>
+			<br /><br />
+			<button id="play-with-bot" onclick="confMatrix(playWithBot);">
+				Play with bot
+			</button>
+			<button id="host-game" onclick="confMatrix(gameLobby);">
+				Host game
+			</button>
+			<button id="join-game" onclick="confMatrix(gameLobby);">
+				Join game
+			</button>
+		</div>
+		<div id="page2">
+			<h1 class="titles">Game Lobby</h1>
+			<br /><br />
+			<div>
+				<p>Current players:</p>
+				<ol id="players-list"></ol>
+				<p id="game-status"></p>
+			</div>
+			<button id="share-room" onclick="copyText();">Share my room</button>
+			<button id="start-game" onclick="playGame();" disabled>
+				Start Game
+			</button>
+			<br />
+			<p id="copied-text"></p>
+		</div>
+		<div id="page3">
+			<img id="win-gif" src="images/win-animation.gif" />
+			<h1 class="titles">Let's Play !</h1>
+			<br /><br />
+			<div>
+				<img
+					src="images/B.png"
+					alt="Letter B"
+					id="u1"
+					class="bingo_letters"
+				/>
+				<img
+					src="images/I.png"
+					alt="Letter I"
+					id="u2"
+					class="bingo_letters"
+				/>
+				<img
+					src="images/N.png"
+					alt="Letter N"
+					id="u3"
+					class="bingo_letters"
+				/>
+				<img
+					src="images/G.png"
+					alt="Letter G"
+					id="u4"
+					class="bingo_letters"
+				/>
+				<img
+					src="images/O.png"
+					alt="Letter O"
+					id="u5"
+					class="bingo_letters"
+				/>
+			</div>
+			<br /><br />
+			<p id="current-turn-block">
+				Current turn:<strong id="current-turn"></strong>
+			</p>
+			<br />
+			<table id="gaming-table"></table>
+			<br /><br />
+			<h1 id="end-result"></h1>
+			<button id="replay" onclick="replay();">Replay</button>
+		</div>
+	</body>
 </html>
