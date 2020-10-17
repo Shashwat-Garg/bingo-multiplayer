@@ -38,6 +38,21 @@
 				</ul>
 			</div>
 		</div>
+		<audio id="alert-sound" class="audios">
+			<source src="./sounds/WINDOWS XP ERROR SOUND.mp3" />
+		</audio>
+		<audio id="winning-sound" class="audios">
+			Your Browser does not support this audio!
+			<source src="sounds/gta_mission_complete.mp3" />
+		</audio>
+		<audio id="losing-sound" class="audios">
+			Your Browser does not support this audio!
+			<source src="sounds/coffin_dance.mp3" />
+		</audio>
+		<audio id="cut-sound" class="audios">
+			Your Browser does not support this audio!
+			<source src="sounds/cut_sound.wav" />
+		</audio>
 		<img id="info" src="images/game_info.png" onclick="gameInfo();" />
 		<br class="small-screen" />
 		<br class="small-screen" />
@@ -56,11 +71,6 @@
 			/>
 			<br /><br />
 			<input type="checkbox" id="rememberMe" /><label for="rememberMe"
-				>Remember me</label
-			>
-			<br /><br />
-			<input type="checkbox" value="lsRememberMe" id="rememberMe" /><label
-				for="rememberMe"
 				>Remember me</label
 			>
 			<br /><br />
@@ -121,10 +131,6 @@
 		</div>
 		<div id="page3">
 			<img id="win-gif" src="images/win-animation.gif" />
-			<audio id="cut-sound">
-				Your Browser does not support this audio!
-				<source src="sounds/cut_sound.wav" />
-			</audio>
 			<h1 class="titles">Let's Play !</h1>
 			<br /><br />
 			<div>
@@ -166,14 +172,6 @@
 			<br />
 			<table id="gaming-table"></table>
 			<br /><br />
-			<audio id="winning-sound">
-				Your Browser does not support this audio!
-				<source src="sounds/winning_sound.wav" />
-			</audio>
-			<audio id="losing-sound">
-				Your Browser does not support this audio!
-				<source src="sounds/losing_sound.wav" />
-			</audio>
 			<h1 id="end-result"></h1>
 			<button id="replay" onclick="replay();">Replay</button>
 		</div>
