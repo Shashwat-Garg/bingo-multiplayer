@@ -165,12 +165,14 @@ body {
 	background-color: white;
 	border: 3px solid green;
 	padding: 0.5vw;
+	font-family: "Autour One";
 }
 #sound-status {
 	border: 3px solid green;
 	background-color: white;
 	padding: 0.5vw;
 	cursor: pointer;
+	font-family: "Barrio";
 }
 .small-screen {
 	margin-bottom: 3vw;
@@ -178,6 +180,14 @@ body {
 	display: inline-block;
 }
 
+#game-info,
+#page0,
+#page2 {
+	font-family: "Architects Daughter";
+}
+.titles {
+	font-family: "McLaren";
+}
 @media only screen and (min-width: 900px) {
 	#user-name {
 		font-size: 1.6vw;
